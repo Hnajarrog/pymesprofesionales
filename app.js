@@ -153,39 +153,72 @@ app.post('/nivel_educacion/delete/:id', (req, res) => {
     });
 });
 
-// Ruta para mostrar la vista de gestión de usuarios
-app.get('/usuarios', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));
+// Ruta para mostrar la vista de creación de usuarios con listas desplegables para roles y áreas
+app.get('/usuarios/create', (req, res) => {
+    const queryRoles = 'SELECT * FROM roles_pyme';
+    const queryAreas = 'SELECT * FROM areapymes';
+
+    connection.query(queryRoles, (errRoles, rolesResults) => {
+        if (errRoles) throw errRoles;
+
+        connection.query(queryAreas, (errAreas, areasResults) => {
+            if (errAreas) throw errAreas;
+
+            res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));  // Muestra la vista usuarios.html
+        });
+    });
 });
 
-// Ruta para obtener la lista de usuarios en formato JSON
+// Ruta para mostrar la lista de usuarios
+app.get('/usuarios', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));  // Muestra la vista usuarios.html
+});
+
+// Ruta para obtener todos los usuarios en formato JSON
 app.get('/api/usuarios', (req, res) => {
-    const query = 'SELECT * FROM Usuarios';
+    const query = `
+        SELECT Usuarios.*, roles_pyme.nombre_rol, areapymes.nombrearea 
+        FROM Usuarios
+        LEFT JOIN roles_pyme ON Usuarios.IDRol = roles_pyme.id_rol
+        LEFT JOIN areapymes ON Usuarios.IDArea = areapymes.id_area;
+    `;
     connection.query(query, (err, results) => {
         if (err) throw err;
-        res.json(results);  // Enviar los resultados en formato JSON
+        res.json(results);  // Devuelve los resultados en formato JSON
+    });
+});
+
+// Ruta para obtener todos los roles y áreas en formato JSON
+app.get('/api/rolesareas', (req, res) => {
+    const queryRoles = 'SELECT * FROM roles_pyme';
+    const queryAreas = 'SELECT * FROM areapymes';
+
+    connection.query(queryRoles, (errRoles, rolesResults) => {
+        if (errRoles) throw errRoles;
+
+        connection.query(queryAreas, (errAreas, areasResults) => {
+            if (errAreas) throw errAreas;
+
+            res.json({ roles: rolesResults, areas: areasResults });
+        });
     });
 });
 
 // Ruta para agregar un nuevo usuario
 app.post('/usuarios/add', (req, res) => {
-    const { NombreUsuario, Correo, Contraseña, Rol, AreaPyme } = req.body;
+    const { NombreUsuario, Correo, Contraseña, IDRol, IDArea } = req.body;
 
-    // Verificar si el nombre de usuario o correo ya existen
-    const checkQuery = 'SELECT * FROM Usuarios WHERE NombreUsuario = ? OR Correo = ?';
-    connection.query(checkQuery, [NombreUsuario, Correo], (err, results) => {
-        if (err) throw err;
+    if (!NombreUsuario || !Correo || !Contraseña || !IDRol || !IDArea) {
+        return res.status(400).send('Todos los campos son obligatorios');
+    }
 
-        if (results.length > 0) {
-            res.send(`<script>alert('El nombre de usuario o correo ya existe.'); window.location.href='/usuarios';</script>`);
-        } else {
-            // Insertar el nuevo usuario
-            const insertQuery = 'INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, Rol, AreaPyme) VALUES (?, ?, ?, ?, ?)';
-            connection.query(insertQuery, [NombreUsuario, Correo, Contraseña, Rol, AreaPyme], (err, result) => {
-                if (err) throw err;
-                res.redirect('/usuarios');
-            });
+    const query = 'INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IDRol, IDArea) VALUES (?, ?, ?, ?, ?)';
+    connection.query(query, [NombreUsuario, Correo, Contraseña, IDRol, IDArea], (err, result) => {
+        if (err) {
+            console.error('Error al agregar el usuario:', err);
+            return res.status(500).send('Error al agregar el usuario');
         }
+        res.redirect('/usuarios');
     });
 });
 
@@ -194,59 +227,11 @@ app.post('/usuarios/delete/:id', (req, res) => {
     const { id } = req.params;
     const query = 'DELETE FROM Usuarios WHERE IDUsuario = ?';
     connection.query(query, [id], (err, result) => {
-        if (err) throw err;
-        res.redirect('/usuarios');
-    });
-});
-
-// Ruta para mostrar la página de edición de un usuario
-app.get('/usuarios/edit/:id', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'editar_usuario.html'));
-});
-
-// Ruta para obtener los datos de un usuario por su ID
-app.get('/api/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM Usuarios WHERE IDUsuario = ?';
-    connection.query(query, [id], (err, results) => {
-        if (err) throw err;
-        res.json(results[0]);  // Devolver los datos del usuario
-    });
-});
-
-// Ruta para obtener los datos de un usuario por su ID
-app.get('/api/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM Usuarios WHERE IDUsuario = ?';
-    connection.query(query, [id], (err, results) => {
-        if (err) throw err;
-        res.json(results[0]);  // Devolver los datos del usuario
-    });
-});
-
-// Ruta para actualizar los datos de un usuario
-app.post('/usuarios/update/:id', (req, res) => {
-    const { NombreUsuario, Correo, Contraseña, Rol, AreaPyme } = req.body;
-    const { id } = req.params;
-
-    if (!NombreUsuario || !Correo || !Rol) {
-        return res.status(400).send('Faltan campos obligatorios');
-    }
-
-    let query;
-    const params = [NombreUsuario, Correo, Rol, AreaPyme, id];
-
-    // Si la contraseña está presente, la actualizamos
-    if (Contraseña) {
-        query = 'UPDATE Usuarios SET NombreUsuario = ?, Correo = ?, Contraseña = ?, Rol = ?, AreaPyme = ? WHERE IDUsuario = ?';
-        params.splice(2, 0, Contraseña);  // Insertar la contraseña en el arreglo de parámetros
-    } else {
-        query = 'UPDATE Usuarios SET NombreUsuario = ?, Correo = ?, Rol = ?, AreaPyme = ? WHERE IDUsuario = ?';
-    }
-
-    connection.query(query, params, (err, result) => {
-        if (err) throw err;
-        res.redirect('/usuarios');
+        if (err) {
+            console.error('Error al eliminar el usuario:', err);
+            return res.status(500).send('Error al eliminar el usuario');
+        }
+        res.redirect('/usuarios');  // Después de eliminar, redirige a la lista de usuarios
     });
 });
 

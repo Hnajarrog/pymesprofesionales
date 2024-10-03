@@ -17,6 +17,23 @@
             margin: 50px auto;
         }
 
+        input[type="text"], input[type="email"], input[type="password"], select {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -37,37 +54,18 @@
             color: white;
         }
 
-        .delete-btn, .edit-btn {
+        .delete-btn {
             background-color: #f44336;
             color: white;
             padding: 5px 10px;
             text-decoration: none;
+            border: none;
+            cursor: pointer;
             border-radius: 5px;
         }
 
-        .delete-btn:hover, .edit-btn:hover {
+        .delete-btn:hover {
             background-color: #d32f2f;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        input[type="text"], input[type="email"], input[type="password"] {
-            padding: 10px;
-            width: 70%;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
         }
 
         .back-link {
@@ -80,14 +78,6 @@
         .back-link:hover {
             color: #000;
         }
-
-        .edit-btn {
-            background-color: #4CAF50;
-        }
-
-        .edit-btn:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
@@ -95,39 +85,47 @@
 <div class="container">
     <h1>Gestión de Usuarios</h1>
 
-    <!-- Formulario para agregar un nuevo usuario -->
     <form action="/usuarios/add" method="POST">
-        <div class="form-group">
-            <input type="text" name="NombreUsuario" placeholder="Nombre de Usuario" required>
-            <input type="email" name="Correo" placeholder="Correo Electrónico" required>
-            <input type="password" name="Contraseña" placeholder="Contraseña" required>
-            <input type="text" name="Rol" placeholder="Rol del Usuario" required>
-            <input type="text" name="AreaPyme" placeholder="Área de la Pyme">
-            <button type="submit">Agregar Usuario</button>
-        </div>
+        <input type="text" name="NombreUsuario" placeholder="Nombre de Usuario" required>
+        <input type="email" name="Correo" placeholder="Correo Electrónico" required>
+        <input type="password" name="Contraseña" placeholder="Contraseña" required>
+
+        <!-- Lista desplegable para seleccionar el rol -->
+        <select name="IDRol" id="rol-select" required>
+            <option value="" disabled selected>Seleccione un Rol</option>
+            <!-- Las opciones se llenarán con JavaScript -->
+        </select>
+
+        <!-- Lista desplegable para seleccionar el área de Pyme -->
+        <select name="IDArea" id="area-select" required>
+            <option value="" disabled selected>Seleccione un Área de Pyme</option>
+            <!-- Las opciones se llenarán con JavaScript -->
+        </select>
+
+        <button type="submit">Crear Usuario</button>
     </form>
 
-    <!-- Tabla para mostrar los usuarios almacenados -->
+    <h2>Lista de Usuarios</h2>
     <table>
         <thead>
             <tr>
                 <th>Nombre de Usuario</th>
-                <th>Correo</th>
+                <th>Correo Electrónico</th>
                 <th>Rol</th>
                 <th>Área Pyme</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody id="usuarios-list">
-            <!-- Aquí se insertarán dinámicamente los usuarios con AJAX -->
+            <!-- Los usuarios se llenarán con AJAX -->
         </tbody>
     </table>
 
-    <a href="/menu" class="back-link">Retornar</a>
+    <a href="/menu" class="back-link">Regresar al Menú</a>
 </div>
 
 <script>
-    // Función para cargar los usuarios
+    // Función para cargar la lista de usuarios
     function cargarUsuarios() {
         fetch('/api/usuarios')
             .then(response => response.json())
@@ -140,11 +138,10 @@
                         <tr>
                             <td>${usuario.NombreUsuario}</td>
                             <td>${usuario.Correo}</td>
-                            <td>${usuario.Rol}</td>
-                            <td>${usuario.AreaPyme}</td>
+                            <td>${usuario.nombre_rol}</td>
+                            <td>${usuario.nombrearea}</td>
                             <td>
-                                <a href="/usuarios/edit/${usuario.IDUsuario}" class="edit-btn">Editar</a>
-                                <form action="/usuarios/delete/${usuario.IDUsuario}" method="POST" style="display:inline;">
+                                <form action="/usuarios/delete/${usuario.IDUsuario}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
                                     <button type="submit" class="delete-btn">Eliminar</button>
                                 </form>
                             </td>
@@ -155,8 +152,36 @@
             .catch(error => console.error('Error al cargar los usuarios:', error));
     }
 
-    // Cargar los usuarios cuando la página esté lista
-    window.onload = cargarUsuarios;
+    // Función para cargar roles y áreas en los select
+    function cargarRolesYAreas() {
+        fetch('/api/rolesareas')
+            .then(response => response.json())
+            .then(data => {
+                const rolSelect = document.getElementById('rol-select');
+                const areaSelect = document.getElementById('area-select');
+
+                data.roles.forEach(rol => {
+                    const option = document.createElement('option');
+                    option.value = rol.id_rol;
+                    option.textContent = rol.nombre_rol;
+                    rolSelect.appendChild(option);
+                });
+
+                data.areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id_area;
+                    option.textContent = area.nombrearea;
+                    areaSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al cargar roles y áreas:', error));
+    }
+
+    // Cargar roles, áreas y usuarios cuando la página se cargue
+    window.onload = function() {
+        cargarRolesYAreas();
+        cargarUsuarios();
+    };
 </script>
 
 </body>
