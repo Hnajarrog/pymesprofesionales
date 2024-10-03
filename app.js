@@ -299,6 +299,53 @@ app.post('/areapymes/delete/:id', (req, res) => {
 
 
 
+// Rutas para el módulo Roles Pyme
+// Ruta para mostrar la vista de gestión de roles de Pymes
+app.get('/rolespyme', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'rolespyme.html'));
+});
+
+// Ruta para obtener todos los roles de Pymes
+app.get('/api/rolespyme', (req, res) => {
+    const query = 'SELECT * FROM roles_pyme';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// Ruta para agregar un nuevo rol de Pyme
+app.post('/rolespyme/add', (req, res) => {
+    const { nombre_rol } = req.body;
+
+    if (!nombre_rol) {
+        return res.status(400).send('El nombre del rol es obligatorio');
+    }
+
+    const query = 'INSERT INTO roles_pyme (nombre_rol) VALUES (?)';
+    connection.query(query, [nombre_rol], (err, result) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).send('El rol ya existe');
+            }
+            throw err;
+        }
+        res.redirect('/rolespyme');
+    });
+});
+
+// Ruta para eliminar un rol de Pyme
+app.post('/rolespyme/delete/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM roles_pyme WHERE id_rol = ?';
+    connection.query(query, [id], (err, result) => {
+        if (err) throw err;
+        res.redirect('/rolespyme');
+    });
+});
+
+
+
 // Ruta para manejar el cierre de sesión
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
