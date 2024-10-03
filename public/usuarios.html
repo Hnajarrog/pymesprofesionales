@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn, .edit-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover, .edit-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+        }
+
+        .edit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Usuarios</h1>
+
+    <!-- Formulario para agregar un nuevo usuario -->
+    <form action="/usuarios/add" method="POST">
+        <div class="form-group">
+            <input type="text" name="NombreUsuario" placeholder="Nombre de Usuario" required>
+            <input type="email" name="Correo" placeholder="Correo Electrónico" required>
+            <input type="password" name="Contraseña" placeholder="Contraseña" required>
+            <input type="text" name="Rol" placeholder="Rol del Usuario" required>
+            <input type="text" name="AreaPyme" placeholder="Área de la Pyme">
+            <button type="submit">Agregar Usuario</button>
+        </div>
+    </form>
+
+    <!-- Tabla para mostrar los usuarios almacenados -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Área Pyme</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="usuarios-list">
+            <!-- Aquí se insertarán dinámicamente los usuarios con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Retornar</a>
+</div>
+
+<script>
+    // Función para cargar los usuarios
+    function cargarUsuarios() {
+        fetch('/api/usuarios')
+            .then(response => response.json())
+            .then(data => {
+                const usuariosList = document.getElementById('usuarios-list');
+                usuariosList.innerHTML = '';
+
+                data.forEach(usuario => {
+                    usuariosList.innerHTML += `
+                        <tr>
+                            <td>${usuario.NombreUsuario}</td>
+                            <td>${usuario.Correo}</td>
+                            <td>${usuario.Rol}</td>
+                            <td>${usuario.AreaPyme}</td>
+                            <td>
+                                <a href="/usuarios/edit/${usuario.IDUsuario}" class="edit-btn">Editar</a>
+                                <form action="/usuarios/delete/${usuario.IDUsuario}" method="POST" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar los usuarios:', error));
+    }
+
+    // Cargar los usuarios cuando la página esté lista
+    window.onload = cargarUsuarios;
+</script>
+
+</body>
+</html>
+

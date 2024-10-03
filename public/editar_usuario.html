@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Editar Usuario</h1>
+
+    <form id="editar-usuario-form" method="POST">
+        <input type="hidden" id="IDUsuario" name="IDUsuario">
+        <div class="form-group">
+            <input type="text" id="NombreUsuario" name="NombreUsuario" placeholder="Nombre de Usuario" required>
+            <input type="email" id="Correo" name="Correo" placeholder="Correo Electrónico" required>
+            <input type="password" id="Contraseña" name="Contraseña" placeholder="Dejar en blanco para no cambiar">
+            <input type="text" id="Rol" name="Rol" placeholder="Rol del Usuario" required>
+            <input type="text" id="AreaPyme" name="AreaPyme" placeholder="Área de la Pyme">
+            <button type="submit">Actualizar Usuario</button>
+        </div>
+    </form>
+
+    <a href="/usuarios" class="back-link">Regresar</a>
+</div>
+
+<script>
+    // Función para cargar los datos del usuario en el formulario
+    function cargarDatosUsuario() {
+        const userID = window.location.pathname.split('/').pop();  // Obtener el ID del usuario desde la URL
+
+        fetch(`/api/usuarios/${userID}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('IDUsuario').value = data.IDUsuario;
+                document.getElementById('NombreUsuario').value = data.NombreUsuario || '';  // Asegurarse de que no sea null
+                document.getElementById('Correo').value = data.Correo || '';  // Asegurarse de que no sea null
+                document.getElementById('Rol').value = data.Rol || '';  // Asegurarse de que no sea null
+                document.getElementById('AreaPyme').value = data.AreaPyme || '';  // Asegurarse de que no sea null
+            })
+            .catch(error => console.error('Error al cargar los datos del usuario:', error));
+    }
+
+    window.onload = cargarDatosUsuario;
+
+    // Formulario de actualización de usuario
+    document.getElementById('editar-usuario-form').onsubmit = function (e) {
+        e.preventDefault();
+
+        const userID = document.getElementById('IDUsuario').value;
+        const formData = new FormData(this);
+
+        // Verificar que no haya valores vacíos o nulos
+        if (!formData.get('NombreUsuario') || !formData.get('Correo') || !formData.get('Rol')) {
+            alert('Por favor, complete todos los campos obligatorios.');
+            return;
+        }
+
+        fetch(`/usuarios/update/${userID}`, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                alert('Usuario actualizado exitosamente');
+                window.location.href = '/usuarios';
+            } else {
+                alert('Error al actualizar el usuario');
+            }
+        }).catch(error => console.error('Error al actualizar el usuario:', error));
+    };
+</script>
+
+</body>
+</html>

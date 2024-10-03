@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Nivel de Educación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Nivel de Educación</h1>
+
+    <!-- Formulario para agregar un nuevo nivel de educación -->
+    <form action="/nivel_educacion/add" method="POST">
+        <div class="form-group">
+            <input type="text" name="nombre_educacion" placeholder="Nombre del Nivel de Educación">
+            <button type="submit">Agregar Nivel de Educación</button>
+        </div>
+    </form>
+
+    <!-- Tabla para mostrar los niveles de educación almacenados -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Nivel de Educación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="nivel-educacion-list">
+            <!-- Aquí se insertarán dinámicamente los niveles de educación con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Retornar</a>
+</div>
+
+<script>
+    // Función para cargar los niveles de educación
+    function cargarNiveles() {
+        fetch('/api/nivel_educacion')
+            .then(response => response.json())
+            .then(data => {
+                const nivelEducacionList = document.getElementById('nivel-educacion-list');
+                nivelEducacionList.innerHTML = '';
+
+                data.forEach(nivel => {
+                    nivelEducacionList.innerHTML += `
+                        <tr>
+                            <td>${nivel.nombre_educacion}</td>
+                            <td>
+                                <form action="/nivel_educacion/delete/${nivel.id_educacion}" method="POST" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar los niveles de educación:', error));
+    }
+
+    // Cargar los niveles de educación cuando la página esté lista
+    window.onload = cargarNiveles;
+</script>
+
+</body>
+</html>

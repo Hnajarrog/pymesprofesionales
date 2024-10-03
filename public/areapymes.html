@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Áreas de Pymes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Áreas de Pymes</h1>
+
+    <!-- Formulario para agregar un nueva área de Pyme -->
+    <form action="/areapymes/add" method="POST">
+        <input type="text" name="nombrearea" placeholder="Nombre del Área" required>
+        <button type="submit">Agregar Área</button>
+    </form>
+
+    <!-- Tabla para mostrar las áreas almacenadas -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Área</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="areas-list">
+            <!-- Aquí se insertarán dinámicamente las áreas con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Función para cargar las áreas
+    function cargarAreas() {
+        fetch('/api/areapymes')
+            .then(response => response.json())
+            .then(data => {
+                const areasList = document.getElementById('areas-list');
+                areasList.innerHTML = '';
+
+                data.forEach(area => {
+                    areasList.innerHTML += `
+                        <tr>
+                            <td>${area.nombrearea}</td>
+                            <td>
+                                <form action="/areapymes/delete/${area.id_area}" method="POST" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar las áreas:', error));
+    }
+
+    // Cargar las áreas cuando la página esté lista
+    window.onload = cargarAreas;
+</script>
+
+</body>
+</html>
