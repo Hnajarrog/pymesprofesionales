@@ -2,13 +2,29 @@ const express = require('express');
 const session = require('express-session'); // Uso de node.js express para la sesión 
 const mysql = require('mysql'); // Driver para la base de datos 
 const path = require('path'); 
+const generoRoutes = require('./routes/genero');
+const disponibilidadRoutes = require('./routes/disponibilidad');// Importar el módulo de disponibilidad
+const pretensionRoutes = require('./routes/pretension_salarial'); // Importar el módulo de pretensión salarial
+const vacantesRoutes = require('./routes/vacantes_laborales'); // Importar el módulo de vacantes laborales
+const rangoEdadRoutes = require('./routes/rango_edad'); // Importar el módulo de rango de edad
 const connection = require('./config');  // Conexión a la base de datos
 
+
+
+
+
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8888;
+
 
 // Configurar archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Middlewares
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static('public'));
+
 
 // Middleware para manejar sesiones
 app.use(session({
@@ -56,6 +72,17 @@ app.get('/menu', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'menu.html')); // Mostrar el archivo HTML del menú
 });
 
+
+app.use('/genero', generoRoutes); // usar modulo genero
+app.use('/disponibilidad', disponibilidadRoutes); // Usar las rutas para disponibilidad
+app.use('/vacantes_laborales', vacantesRoutes); // Usar las rutas para vacantes laborales
+app.use('/rango_edad', rangoEdadRoutes);// Usar las rutas para rango de edad
+
+
+
+// Usar las rutas para pretensión salarial
+app.use('/pretension_salarial', pretensionRoutes);
+
 // Ruta para mostrar la página de gestión de profesiones
 app.get('/profesiones', (req, res) => {
     const query = 'SELECT * FROM profesiones';
@@ -64,6 +91,9 @@ app.get('/profesiones', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', 'profesiones.html'));  // Mostrar la página profesiones.html
     });
 });
+
+
+
 
 // Ruta para agregar una nueva profesión
 app.post('/profesiones/add', (req, res) => {
@@ -328,6 +358,58 @@ app.post('/rolespyme/delete/:id', (req, res) => {
         res.redirect('/rolespyme');
     });
 });
+
+
+// Ruta para mostrar la lista de estados civiles y cargar la vista
+app.get('/estado_civil', (req, res) => {
+    const query = 'SELECT * FROM estado_civil';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        // Aquí enviamos los datos a la vista con un JSON
+        res.sendFile(path.join(__dirname, 'public', 'estado_civil.html')); // Cargamos la vista
+    });
+});
+
+// Ruta para obtener los estados civiles en formato JSON (AJAX)
+app.get('/api/estado_civil', (req, res) => {
+    const query = 'SELECT * FROM estado_civil';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results); // Devuelve la lista en formato JSON
+    });
+});
+
+// Ruta para agregar un nuevo estado civil
+app.post('/estado_civil/add', (req, res) => {
+    const { nombre_estado } = req.body;
+
+    if (!nombre_estado) {
+        return res.status(400).send('El nombre del estado civil es obligatorio');
+    }
+
+    const query = 'INSERT INTO estado_civil (nombre_estado) VALUES (?)';
+    connection.query(query, [nombre_estado], (err, result) => {
+        if (err) {
+            console.error('Error al agregar el estado civil:', err);
+            return res.status(500).send('Error al agregar el estado civil');
+        }
+        res.redirect('/estado_civil');  // Redirige a la lista de estados civiles después de agregar
+    });
+});
+
+// Ruta para eliminar un estado civil
+app.post('/estado_civil/delete/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM estado_civil WHERE id_estado = ?';
+    connection.query(query, [id], (err, result) => {
+        if (err) {
+            console.error('Error al eliminar el estado civil:', err);
+            return res.status(500).send('Error al eliminar el estado civil');
+        }
+        res.redirect('/estado_civil');  // Redirige a la lista de estados civiles después de eliminar
+    });
+});
+
 
 
 
