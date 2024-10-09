@@ -7,6 +7,10 @@ const disponibilidadRoutes = require('./routes/disponibilidad');// Importar el m
 const pretensionRoutes = require('./routes/pretension_salarial'); // Importar el módulo de pretensión salarial
 const vacantesRoutes = require('./routes/vacantes_laborales'); // Importar el módulo de vacantes laborales
 const rangoEdadRoutes = require('./routes/rango_edad'); // Importar el módulo de rango de edad
+const experienciaRoutes = require('./routes/experiencia_laboral');// Importar el módulo de experiencia laboral
+const licenciaRoutes = require('./routes/licencia_conducir'); // Importar el módulo de licencias de conducir
+const idiomaRoutes = require('./routes/gestion_idioma');// Importar el módulo de gestión de idiomas
+const ubicacionRoutes = require('./routes/gestion_ubicacion'); // Importar el módulo de gestión de ubicaciones
 const connection = require('./config');  // Conexión a la base de datos
 
 
@@ -77,11 +81,11 @@ app.use('/genero', generoRoutes); // usar modulo genero
 app.use('/disponibilidad', disponibilidadRoutes); // Usar las rutas para disponibilidad
 app.use('/vacantes_laborales', vacantesRoutes); // Usar las rutas para vacantes laborales
 app.use('/rango_edad', rangoEdadRoutes);// Usar las rutas para rango de edad
-
-
-
-// Usar las rutas para pretensión salarial
-app.use('/pretension_salarial', pretensionRoutes);
+app.use('/experiencia_laboral', experienciaRoutes);// Usar las rutas para experiencia laboral
+app.use('/licencia_conducir', licenciaRoutes);// Usar las rutas para licencias de conducir
+app.use('/gestion_idioma', idiomaRoutes);  // Usar las rutas para gestión de idiomas
+app.use('/gestion_ubicacion', ubicacionRoutes);// Usar las rutas para gestión de ubicaciones
+app.use('/pretension_salarial', pretensionRoutes); // Usar las rutas para pretensión salarial
 
 // Ruta para mostrar la página de gestión de profesiones
 app.get('/profesiones', (req, res) => {
