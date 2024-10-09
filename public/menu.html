@@ -12,20 +12,19 @@
             background-color: #fafafaf8;
             display: flex;
         }
-
         .sidebar {
-            width: 250px;
+            width: 240px;
             background-color: #333;
             color: white;
-            height: 100vh;
+            height: 90vh;
             position: fixed;
             top: 0;
             left: 0;
             display: flex;
             flex-direction: column;
             padding-top: 30px;
+            overflow-y: auto;  /* Permite el desplazamiento vertical */
         }
-
         .sidebar a {
             text-decoration: none;
             color: white;
@@ -34,36 +33,30 @@
             text-align: center;
             transition: background-color 0.3s ease;
         }
-
         .sidebar a:hover {
             background-color: #575757;
         }
-
         .sidebar h2 {
             text-align: center;
             margin-bottom: 20px;
             font-size: 24px;
         }
-
         .content {
             margin-left: 250px;
             padding: 20px;
             flex-grow: 1;
         }
-
         .content h1 {
             color: #333;
         }
-
         .quick-actions {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
-
         .quick-actions div {
             background-color: #4CAF50;
-            padding: 20px;
+            padding: 10px;
             color: rgb(180, 247, 241);
             border-radius: 10px;
             text-align: center;
@@ -71,17 +64,14 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         .quick-actions div:hover {
             background-color: #45a049;
         }
-
         .logout-btn {
             margin-top: auto;
             text-align: center;
             padding: 15px;
         }
-
         .logout-btn a {
             text-decoration: none;
             color: white;
@@ -90,44 +80,40 @@
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-
         .logout-btn a:hover {
             background-color: #d32f2f;
         }
-
         /* Submenús */
         .submenu {
             display: none;
             flex-direction: column;
             background-color: #444;
+            max-height: 200px; /* Limita la altura del submenú */
+            overflow-y: auto;  /* Permite el desplazamiento en el submenú */
         }
-
         .menu-item {
             position: relative;
         }
-
         .menu-item:hover .submenu {
             display: flex;
         }
-
         .submenu a {
-            padding-left: 30px;
+            padding-left: 25px;
             background-color: #444;
             text-align: left;
         }
-
         .submenu a:hover {
             background-color: #575757;
         }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
         <h2>Menú Principal</h2>
         <a href="/candidatos">Gestión de Candidatos</a>  <!-- Por Implementar trabajando en los complementos de este modulo -->
         <a href="/comparar">Comparar Curriculum-Perfil</a>  <!-- Por Implementar trabajando en los complementos de este modulo --> 
         <a href="/vacantes_laborales">Vacantes Laborales</a>
+
         <!-- Submenú para Características de Candidatos -->
         <div class="menu-item">
             <a href="#">Características de Candidatos</a>
@@ -139,9 +125,12 @@
                 <a href="/disponibilidad">Disponibilidad Horario</a>
                 <a href="/pretension_salarial">Pretensión Salarial</a>
                 <a href="/rango_edad">Rango Edad</a>
+                <a href="/experiencia_laboral">Experiencia Laboral</a>
+                <a href="/licencia_conducir">Licencia de Conducir</a>
+                <a href="/gestion_idioma">Gestión Idiomas</a>
+                <a href="/gestion_ubicacion">Gestión Ubicaciones</a>
             </div>
         </div>
-
         <!-- Nuevo Submenú para Gestión de Usuarios -->
         <div class="menu-item">
             <a href="#">Gestión de Usuarios</a>
@@ -151,18 +140,12 @@
                 <a href="/usuarios">Usuarios</a>
             </div>
         </div>
-
         <a href="/perfiles">Gestión de Perfiles</a>  <!-- Por Implementar trabajando en los complementos de este modulo -->
-
-        <div class="logout-btn">
-            <a href="/logout">Cerrar Sesión</a>
-        </div>
+        
     </div>
-
     <div class="content">
         <h1>Bienvenido al Sistema de Perfiles Profesionales</h1>
         <p>Seleccione una opción en el menú o elija una acción rápida a continuación:</p>
-
         <div class="quick-actions">
             <div>
                 <h3>Crear Nuevo Perfil</h3>
@@ -174,7 +157,15 @@
                 <h3>Ver Comparaciones Recientes</h3>
             </div>
         </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="logout-btn">
+            <a href="/logout">Cerrar Sesión</a>
+        </div>
     </div>
-
 </body>
 </html>
