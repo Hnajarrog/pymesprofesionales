@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Candidatos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%; /* Ajuste para hacer el contenedor más pequeño */
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 90%;  /* Reducción para alinearlo mejor con la leyenda */
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: block;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto; /* Centrar el botón */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-link {
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+
+        legend {
+            font-size: 14px;
+            color: #888;
+            margin-top: 1px;
+            margin-left: 5px; /* Ajustar la leyenda con respecto a los campos */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Candidatos</h1>
+    <form action="/candidatos/add" method="POST" onsubmit="return confirmarDatos();">
+        <div class="form-group">
+            <label for="no_identificacion">No. Identificación:</label>
+            <input type="text" id="no_identificacion" name="no_identificacion" required>
+            <legend>Ingrese el número de identificación único del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="nombres">Nombres:</label>
+            <input type="text" id="nombres" name="nombres" required>
+            <legend>Ingrese el nombre completo del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="apellidos">Apellidos:</label>
+            <input type="text" id="apellidos" name="apellidos" required>
+            <legend>Ingrese los apellidos del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_genero">Género:</label>
+            <select id="id_genero" name="id_genero" required>
+                <option value="">Seleccione el género</option>
+            </select>
+            <legend>Seleccione el género del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_profesion">Profesión:</label>
+            <select id="id_profesion" name="id_profesion" required>
+                <option value="">Seleccione la profesión</option>
+            </select>
+            <legend>Seleccione la profesión del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_nivel_educacion">Nivel de Educación:</label>
+            <select id="id_nivel_educacion" name="id_nivel_educacion" required>
+                <option value="">Seleccione el nivel de educación</option>
+            </select>
+            <legend>Seleccione el nivel de educación del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_disponibilidad">Disponibilidad Horaria:</label>
+            <select id="id_disponibilidad" name="id_disponibilidad" required>
+                <option value="">Seleccione la disponibilidad horaria</option>
+            </select>
+            <legend>Seleccione la disponibilidad horaria del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_pretension">Pretensión Salarial:</label>
+            <select id="id_pretension" name="id_pretension" required>
+                <option value="">Seleccione la pretensión salarial</option>
+            </select>
+            <legend>Seleccione la pretensión salarial del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            <legend>Seleccione la fecha de nacimiento del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_experiencia">Experiencia Laboral:</label>
+            <select id="id_experiencia" name="id_experiencia" required>
+                <option value="">Seleccione la experiencia laboral</option>
+            </select>
+            <legend>Seleccione la experiencia laboral del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_licencia">Licencia de Conducir:</label>
+            <select id="id_licencia" name="id_licencia" required>
+                <option value="">Seleccione la licencia de conducir</option>
+            </select>
+            <legend>Seleccione tipo de licencia, si aplica.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_ubicacion">Ubicación de preferencia:</label>
+            <select id="id_ubicacion" name="id_ubicacion" required>
+                <option value="">Seleccione la ubicación de lugar a aplicar</option>
+            </select>
+            <legend>Seleccione la ubicación.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_estado_civil">Estado Civil:</label>
+            <select id="id_estado_civil" name="id_estado_civil" required>
+                <option value="">Seleccione el estado civil</option>
+            </select>
+            <legend>Seleccione el estado civil del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="id_vacante">Vacante a la que Aplica:</label>
+            <select id="id_vacante" name="id_vacante" required>
+                <option value="">Seleccione la vacante</option>
+            </select>
+            <legend>Seleccione la vacante a la que el candidato está aplicando.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="correo">Correo Electrónico:</label>
+            <input type="email" id="correo" name="correo" required>
+            <legend>Ingrese el correo electrónico del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" required>
+            <legend>Ingrese el número de teléfono del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="referencias_personales">Referencias Personales:</label>
+            <textarea id="referencias_personales" name="referencias_personales" required></textarea>
+            <legend>Ingrese las referencias personales del candidato.</legend>
+        </div>
+
+        <div class="form-group">
+            <label for="referencias_laborales">Referencias Laborales:</label>
+            <textarea id="referencias_laborales" name="referencias_laborales"></textarea>
+            <legend>Ingrese las referencias laborales del candidato, si aplica.</legend>
+        </div>
+
+        <button type="submit">Guardar Candidato</button>
+
+        <a href="/menu" class="back-link">Regresar al Menú</a>
+    </form>
+</div>
+
+<script>
+    function confirmarDatos() {
+        return confirm('¿Está seguro de que los datos son correctos?');
+    }
+
+    // Función para cargar los datos dinámicamente usando AJAX
+    function cargarDatos(selectId, apiEndpoint) {
+        fetch(apiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                const selectElement = document.getElementById(selectId);
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id_genero || item.ID || item.id_educacon || item.id_disponibilidad || item.id_pretension || item.id_edad || item.id_experiencia || item.id_licencia || item.id_ubicacion || item.id_estado || item.id_vacante;
+                    option.textContent = item.nombre_genero || item.nombreprofesion || item.nombre_educacion || item.nombre_disponibilidad || item.valor_pretension || item.rango_edad || item.explicacion_experiencia || item.nombre_licencia || item.nombre_ubicacion || item.nombre_estado || item.titulo_vacante;
+                    selectElement.appendChild(option);
+                });
+            })
+            .catch(error => console.error(`Error al cargar ${selectId}:`, error));
+    }
+
+    // Cargar todos los datos cuando la página se cargue
+    window.onload = function() {
+        cargarDatos('id_genero', '/candidatos/api/genero');
+        cargarDatos('id_profesion', '/candidatos/api/profesiones');
+        cargarDatos('id_nivel_educacion', '/candidatos/api/nivel_educacion');
+        cargarDatos('id_disponibilidad', '/candidatos/api/disponibilidad');
+        cargarDatos('id_pretension', '/candidatos/api/pretension_salarial');
+        cargarDatos('id_rango_edad', '/candidatos/api/rango_edad');
+        cargarDatos('id_experiencia', '/candidatos/api/experiencia_laboral');
+        cargarDatos('id_licencia', '/candidatos/api/licencia_conducir');
+        cargarDatos('id_ubicacion', '/candidatos/api/ubicaciones');
+        cargarDatos('id_estado_civil', '/candidatos/api/estado_civil');
+        cargarDatos('id_vacante', '/candidatos/api/vacantes_laborales');
+    };
+</script>
+
+</body>
+</html>
