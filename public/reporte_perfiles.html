@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Perfiles Profesionales</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .perfil-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .perfil-container h2 {
+            text-align: left;
+            color: #4CAF50;
+        }
+
+        .perfil-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .detail-value {
+            color: #555;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .print-btn {
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            display: block;
+        }
+
+        /* Ocultar botones al imprimir */
+        @media print {
+            .delete-btn, .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Reporte de Perfiles Profesionales</h1>
+
+<button class="print-btn" onclick="window.print()">Imprimir</button>
+
+<div id="perfiles-container">
+    <!-- Los datos se llenarán con AJAX -->
+</div>
+
+<a href="/menu" class="back-link">Regresar al Menú</a>
+
+<script>
+    // Función para cargar los datos de perfiles profesionales
+    function cargarPerfiles() {
+        fetch('/reporte_perfiles/api/perfiles_profesionales')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('perfiles-container');
+                container.innerHTML = '';  // Limpiar contenido previo
+
+                data.forEach(perfil => {
+                    const div = document.createElement('div');
+                    div.className = 'perfil-container';
+                    div.innerHTML = `
+                        <div class="perfil-details">
+                            <h2>Perfil: ${perfil.titulo_vacante}</h2>
+                            <div class="detail-row"><span class="detail-label">Vacante:</span><span class="detail-value">${perfil.titulo_vacante}</span></div>
+                            <div class="detail-row"><span class="detail-label">Profesión:</span><span class="detail-value">${perfil.nombreprofesion}</span></div>
+                            <div class="detail-row"><span class="detail-label">Nivel de Educación:</span><span class="detail-value">${perfil.nombre_educacion}</span></div>
+                            <div class="detail-row"><span class="detail-label">Disponibilidad Horaria:</span><span class="detail-value">${perfil.nombre_disponibilidad}</span></div>
+                            <div class="detail-row"><span class="detail-label">Pretensión Salarial:</span><span class="detail-value">${perfil.valor_pretension}</span></div>
+                            <div class="detail-row"><span class="detail-label">Experiencia Laboral:</span><span class="detail-value">${perfil.explicacion_experiencia}</span></div>
+                            <div class="detail-row"><span class="detail-label">Licencia de Conducir:</span><span class="detail-value">${perfil.nombre_licencia}</span></div>
+                            <div class="detail-row"><span class="detail-label">Ubicación:</span><span class="detail-value">${perfil.nombre_ubicacion}</span></div>
+                            <div class="detail-row"><span class="detail-label">Rango de Edad:</span><span class="detail-value">${perfil.rango_edad}</span></div>
+                            <div class="detail-row"><span class="detail-label">Disponibilidad para Viajar:</span><span class="detail-value">${perfil.nombre_disponibilidad_viajar}</span></div>
+                            <button class="delete-btn" onclick="eliminarPerfil('${perfil.id_perfil}')">Eliminar</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error al cargar perfiles:', error));
+    }
+
+    // Función para eliminar un perfil profesional
+    function eliminarPerfil(id_perfil) {
+        if (confirm('¿Está seguro de que desea eliminar este perfil?')) {
+            fetch(`/reporte_perfiles/delete/${id_perfil}`, { method: 'DELETE' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    cargarPerfiles();
+                })
+                .catch(error => console.error('Error al eliminar perfil:', error));
+        }
+    }
+
+    // Cargar perfiles al cargar la página
+    window.onload = cargarPerfiles;
+</script>
+
+</body>
+</html>

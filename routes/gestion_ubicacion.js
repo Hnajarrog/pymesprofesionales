@@ -10,12 +10,14 @@ router.get('/', (req, res) => {
 
 // Obtener la lista de ubicaciones en formato JSON (para AJAX)
 router.get('/api', (req, res) => {
-    const query = 'SELECT * FROM ubicaciones';
+    const query = 'SELECT * FROM ubicaciones ORDER BY nombre_ubicacion ASC';
     connection.query(query, (err, results) => {
         if (err) throw err;
         res.json(results);
     });
 });
+
+
 
 // Agregar una nueva ubicación
 router.post('/add', (req, res) => {

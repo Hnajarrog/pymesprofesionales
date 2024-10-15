@@ -107,9 +107,23 @@ router.get('/api/vacantes_laborales', (req, res) => {
     });
 });
 
+// Ruta para obtener la disponibilidad de viajar en formato JSON (API)
+router.get('/api/disponibilidad_viajar', (req, res) => {
+    const query = 'SELECT * FROM disponibilidad_viajar';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);  // Devuelve la disponibilidad para viajar en formato JSON
+    });
+});
+
 // Ruta para agregar un nuevo candidato con verificación de duplicado
 router.post('/add', (req, res) => {
-    const { no_identificacion, nombres, apellidos, id_genero, id_profesion, id_nivel_educacion, id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, id_licencia, id_ubicacion, id_estado_civil, id_vacante, correo, telefono, referencias_personales, referencias_laborales } = req.body;
+    const {
+        no_identificacion, nombres, apellidos, id_genero, id_profesion, id_nivel_educacion, 
+        id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, id_licencia, 
+        id_ubicacion, id_estado_civil, id_vacante, id_disponibilidad_viajar, correo, telefono, 
+        referencias_personales, referencias_laborales
+    } = req.body;
 
     // Verificar si el número de identificación ya existe en la base de datos
     const checkQuery = 'SELECT * FROM candidatos WHERE no_identificacion = ?';
@@ -122,10 +136,18 @@ router.post('/add', (req, res) => {
         } else {
             // Si no existe, proceder con la inserción
             const insertQuery = `
-                INSERT INTO candidatos (no_identificacion, nombres, apellidos, id_genero, id_profesion, id_nivel_educacion, id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, id_licencia, id_ubicacion, id_estado_civil, id_vacante, correo, telefono, referencias_personales, referencias_laborales)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                INSERT INTO candidatos (no_identificacion, nombres, apellidos, id_genero, id_profesion, 
+                id_nivel_educacion, id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, 
+                id_licencia, id_ubicacion, id_estado_civil, id_vacante, id_disponibilidad_viajar, 
+                correo, telefono, referencias_personales, referencias_laborales)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-            const values = [no_identificacion, nombres, apellidos, id_genero, id_profesion, id_nivel_educacion, id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, id_licencia, id_ubicacion, id_estado_civil, id_vacante, correo, telefono, referencias_personales, referencias_laborales];
+            const values = [
+                no_identificacion, nombres, apellidos, id_genero, id_profesion, id_nivel_educacion, 
+                id_disponibilidad, id_pretension, fecha_nacimiento, id_experiencia, id_licencia, 
+                id_ubicacion, id_estado_civil, id_vacante, id_disponibilidad_viajar, correo, telefono, 
+                referencias_personales, referencias_laborales
+            ];
 
             connection.query(insertQuery, values, (err, result) => {
                 if (err) {
@@ -138,6 +160,5 @@ router.post('/add', (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

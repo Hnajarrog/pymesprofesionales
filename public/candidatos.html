@@ -85,7 +85,7 @@
         <div class="form-group">
             <label for="no_identificacion">No. Identificación:</label>
             <input type="text" id="no_identificacion" name="no_identificacion" required>
-            <legend>Ingrese el número de identificación único del candidato.</legend>
+            <legend>Ingrese el número de identificación único del candidato (13 dígitos).</legend>
         </div>
 
         <div class="form-group">
@@ -186,6 +186,15 @@
             <legend>Seleccione la vacante a la que el candidato está aplicando.</legend>
         </div>
 
+        <!-- Campo para disponibilidad de viajar -->
+        <div class="form-group">
+            <label for="id_disponibilidad_viajar">Disponibilidad para Viajar:</label>
+            <select id="id_disponibilidad_viajar" name="id_disponibilidad_viajar" required>
+                <option value="">Seleccione la disponibilidad para viajar</option>
+            </select>
+            <legend>Seleccione si el candidato está disponible para viajar.</legend>
+        </div>
+
         <div class="form-group">
             <label for="correo">Correo Electrónico:</label>
             <input type="email" id="correo" name="correo" required>
@@ -229,8 +238,8 @@
                 const selectElement = document.getElementById(selectId);
                 data.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = item.id_genero || item.ID || item.id_educacon || item.id_disponibilidad || item.id_pretension || item.id_edad || item.id_experiencia || item.id_licencia || item.id_ubicacion || item.id_estado || item.id_vacante;
-                    option.textContent = item.nombre_genero || item.nombreprofesion || item.nombre_educacion || item.nombre_disponibilidad || item.valor_pretension || item.rango_edad || item.explicacion_experiencia || item.nombre_licencia || item.nombre_ubicacion || item.nombre_estado || item.titulo_vacante;
+                    option.value = item.id_genero || item.ID || item.id_educacon || item.id_disponibilidad || item.id_pretension || item.id_edad || item.id_experiencia || item.id_licencia || item.id_ubicacion || item.id_estado || item.id_vacante || item.id_disponibilidad_viajar;
+                    option.textContent = item.nombre_genero || item.nombreprofesion || item.nombre_educacion || item.nombre_disponibilidad || item.valor_pretension || item.rango_edad || item.explicacion_experiencia || item.nombre_licencia || item.nombre_ubicacion || item.nombre_estado || item.titulo_vacante || item.nombre_disponibilidad;
                     selectElement.appendChild(option);
                 });
             })
@@ -244,12 +253,12 @@
         cargarDatos('id_nivel_educacion', '/candidatos/api/nivel_educacion');
         cargarDatos('id_disponibilidad', '/candidatos/api/disponibilidad');
         cargarDatos('id_pretension', '/candidatos/api/pretension_salarial');
-        cargarDatos('id_rango_edad', '/candidatos/api/rango_edad');
         cargarDatos('id_experiencia', '/candidatos/api/experiencia_laboral');
         cargarDatos('id_licencia', '/candidatos/api/licencia_conducir');
         cargarDatos('id_ubicacion', '/candidatos/api/ubicaciones');
         cargarDatos('id_estado_civil', '/candidatos/api/estado_civil');
         cargarDatos('id_vacante', '/candidatos/api/vacantes_laborales');
+        cargarDatos('id_disponibilidad_viajar', '/candidatos/api/disponibilidad_viajar');
     };
 </script>
 

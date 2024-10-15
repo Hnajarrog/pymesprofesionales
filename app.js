@@ -11,15 +11,16 @@ const experienciaRoutes = require('./routes/experiencia_laboral');// Importar el
 const licenciaRoutes = require('./routes/licencia_conducir'); // Importar el módulo de licencias de conducir
 const idiomaRoutes = require('./routes/gestion_idioma');// Importar el módulo de gestión de idiomas
 const ubicacionRoutes = require('./routes/gestion_ubicacion'); // Importar el módulo de gestión de ubicaciones
-const connection = require('./config');  // Conexión a la base de datos
-
-
-
-
+const candidatosRoutes = require('./routes/candidatos');  // Importar el módulo de gestión de candidatos
+const loginRoutes = require('./routes/login'); // Importa el módulo de login
+const perfilesProfesionalesRoutes = require('./routes/perfiles_profesionales'); // importa ruta de perfiles profesionales
+const disponibilidadViajarRoutes = require('./routes/disponibilidad_viajar'); // Importa el modulo dispóniblidad de viajar.
+const reportePerfilesRoutes = require('./routes/reporte_perfiles');// importa repote perfiles.js para ser utilizado
+const reporteCandidatosRoutes = require('./routes/reporte_candidatos');// reportes candidatos
+const connection = require('./config');  //Conexión a la base de datos
 
 const app = express();
 const port = process.env.PORT || 8888;
-
 
 // Configurar archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -28,6 +29,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
+
+
+
+
+
 
 
 // Middleware para manejar sesiones
@@ -42,38 +48,15 @@ app.use(session({
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Ruta principal para el login
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-// Ruta para manejar el login
-app.post('/login', (req, res) => {
-    const { correo, password } = req.body;
-    const query = 'SELECT * FROM Usuarios WHERE Correo = ?';
-
-    connection.query(query, [correo], (err, results) => {
-        if (err) throw err;
-        if (results.length === 0) {
-            return res.sendFile(path.join(__dirname, 'public', 'login.html')); // Mostrar el login si no se encuentra usuario
-        }
-
-        const user = results[0];
-        if (password === user.Contraseña) {
-            req.session.userId = user.IDUsuario;
-            res.redirect('/menu');
-        } else {
-            res.sendFile(path.join(__dirname, 'public', 'login.html')); // Contraseña incorrecta
-        }
-    });
-});
+// Rutas para login (módulo separado)
+app.use('/', loginRoutes);
 
 // Ruta para mostrar el menú principal
 app.get('/menu', (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/');
     }
-    res.sendFile(path.join(__dirname, 'public', 'menu.html')); // Mostrar el archivo HTML del menú
+    res.sendFile(path.join(__dirname, 'public', 'menu.html'));
 });
 
 
@@ -86,7 +69,11 @@ app.use('/licencia_conducir', licenciaRoutes);// Usar las rutas para licencias d
 app.use('/gestion_idioma', idiomaRoutes);  // Usar las rutas para gestión de idiomas
 app.use('/gestion_ubicacion', ubicacionRoutes);// Usar las rutas para gestión de ubicaciones
 app.use('/pretension_salarial', pretensionRoutes); // Usar las rutas para pretensión salarial
-
+app.use('/candidatos', candidatosRoutes); // Usar las rutas de gestión de candidatos
+app.use('/disponibilidad_viajar', disponibilidadViajarRoutes); // usar modulo disponibilidad de viajar.
+app.use('/perfiles_profesionales', perfilesProfesionalesRoutes);// usa modulo de perfiles profesionales
+app.use('/reporte_perfiles', reportePerfilesRoutes); // utiliza modulo de reporte perfiles 
+app.use('/reporte_candidatos', reporteCandidatosRoutes); // utilizar reporte candidatos 
 // Ruta para mostrar la página de gestión de profesiones
 app.get('/profesiones', (req, res) => {
     const query = 'SELECT * FROM profesiones';
@@ -95,10 +82,6 @@ app.get('/profesiones', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', 'profesiones.html'));  // Mostrar la página profesiones.html
     });
 });
-
-
-
-
 // Ruta para agregar una nueva profesión
 app.post('/profesiones/add', (req, res) => {
     const { nombreprofesion } = req.body;
@@ -116,7 +99,6 @@ app.post('/profesiones/add', (req, res) => {
         res.redirect('/profesiones');
     });
 });
-
 // Ruta para obtener la lista de profesiones
 app.get('/api/profesiones', (req, res) => {
     const query = 'SELECT * FROM profesiones';
@@ -125,7 +107,6 @@ app.get('/api/profesiones', (req, res) => {
         res.json(results);  // Enviar los resultados en formato JSON
     });
 });
-
 // Ruta para eliminar una profesión
 app.post('/profesiones/delete/:id', (req, res) => {
     const { id } = req.params;
@@ -138,13 +119,10 @@ app.post('/profesiones/delete/:id', (req, res) => {
         res.redirect('/profesiones');
     });
 });
-
-
 // Ruta para mostrar la vista de gestión de nivel de educación
 app.get('/nivel_educacion', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'nivel_educacion.html'));  // Cargar la página de nivel de educación
 });
-
 // Ruta para obtener los niveles de educación en formato JSON
 app.get('/api/nivel_educacion', (req, res) => {
     const query = 'SELECT * FROM nivel_educacion';
@@ -153,11 +131,9 @@ app.get('/api/nivel_educacion', (req, res) => {
         res.json(results);  // Enviar los resultados en formato JSON
     });
 });
-
 // Ruta para agregar un nuevo nivel de educación
 app.post('/nivel_educacion/add', (req, res) => {
     const { nombre_educacion } = req.body;
-
     // Verificar si el nivel de educación ya existe
     const checkQuery = 'SELECT * FROM nivel_educacion WHERE nombre_educacion = ?';
     connection.query(checkQuery, [nombre_educacion], (err, results) => {
@@ -202,12 +178,10 @@ app.get('/usuarios/create', (req, res) => {
         });
     });
 });
-
 // Ruta para mostrar la lista de usuarios
 app.get('/usuarios', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));  // Muestra la vista usuarios.html
 });
-
 // Ruta para obtener todos los usuarios en formato JSON
 app.get('/api/usuarios', (req, res) => {
     const query = `

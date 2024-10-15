@@ -15,5 +15,8 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.11.3",
     "perfilesprofesionales": "file:"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }

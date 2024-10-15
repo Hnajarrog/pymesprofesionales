@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
     <style>
-        /* Estilos para el cuerpo */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8efef;
@@ -16,7 +15,6 @@
             margin: 0;
         }
 
-        /* Estilos para el contenedor del formulario */
         .login-container {
             background-color: rgb(221, 214, 214);
             padding: 25px;
@@ -25,13 +23,11 @@
             width: 300px;
         }
 
-        /* Estilos para el título del formulario */
         h1 {
             text-align: center;
             color: #333;
         }
-        
-        /* Estilos para los campos de entrada */
+
         input[type="email"],
         input[type="password"] {
             width: 100%;
@@ -41,7 +37,6 @@
             border-radius: 4px;
         }
 
-        /* Estilos para el botón de inicio de sesión */
         button {
             width: 100%;
             padding: 10px;
@@ -55,16 +50,54 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .toggle-password {
+            margin-top: -25px;
+            margin-bottom: 10px;
+            float: right;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h1>Iniciar Sesión</h1>
+        <div id="error-message" class="error-message" style="display: none;"></div>
         <form action="/login" method="POST">
             <input type="email" name="correo" placeholder="Correo Electrónico" required><br>
-            <input type="password" name="password" placeholder="Contraseña" required><br>
+            <input type="password" id="password" name="password" placeholder="Contraseña" required>
+            <span class="toggle-password" onclick="togglePassword()">Mostrar</span><br>
             <button type="submit">Iniciar Sesión</button>
         </form>
     </div>
+
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            const toggleText = document.querySelector(".toggle-password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleText.textContent = "Ocultar";
+            } else {
+                passwordField.type = "password";
+                toggleText.textContent = "Mostrar";
+            }
+        }
+
+        // Capturar el mensaje de error de la URL y mostrarlo
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = error;
+            errorMessageDiv.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
