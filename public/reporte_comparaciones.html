@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Comparaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .comparacion-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .comparacion-container h2 {
+            text-align: left;
+            color: #4CAF50;
+        }
+
+        .comparacion-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .detail-value {
+            color: #555;
+        }
+
+        .print-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .print-btn:hover {
+            background-color: #45a049;
+        }
+
+        .delete-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px; /* Hacer que el tamaño del botón sea más parecido al de "Regresar al Menú" */
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Redondear bordes */
+    font-size: 14px; /* Ajustar el tamaño de la fuente */
+    width: 100%; /* Hacer el botón del mismo ancho que el contenedor */
+    max-width: 150px; /* Limitar el ancho máximo */
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+
+
+        /* Estilo para el botón de regresar */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ocultar botones al imprimir */
+        @media print {
+            .delete-btn, .print-btn, .back-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Reporte de Comparaciones</h1>
+
+<button class="print-btn" onclick="window.print()">Imprimir</button>
+
+<div id="comparaciones-container">
+    <!-- Los datos se llenarán con AJAX -->
+</div>
+
+<a href="/menu" class="back-link">Regresar al Menú</a>
+
+<script>
+    // Función para cargar los datos de comparaciones
+    function cargarComparaciones() {
+        fetch('/reporte_comparaciones/api/comparaciones')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('comparaciones-container');
+                container.innerHTML = '';  // Limpiar contenido previo
+
+                data.forEach(comparacion => {
+                    const div = document.createElement('div');
+                    div.className = 'comparacion-container';
+                    div.innerHTML = `
+                        <div class="comparacion-details">
+                            <h2>Candidato: ${comparacion.candidato_nombre} ${comparacion.candidato_apellido}</h2>
+                            <div class="detail-row"><span class="detail-label">Perfil:</span><span class="detail-value">${comparacion.perfil_nombre}</span></div>
+                            <div class="detail-row"><span class="detail-label">Afinidad:</span><span class="detail-value">${comparacion.afinidad}%</span></div>
+                            <div class="detail-row"><span class="detail-label">Fecha de Comparación:</span><span class="detail-value">${comparacion.fecha_comparacion}</span></div>
+                            <button class="delete-btn" onclick="eliminarComparacion('${comparacion.id_comparacion}')">Eliminar</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error al cargar comparaciones:', error));
+    }
+
+    // Función para eliminar una comparación
+    function eliminarComparacion(id_comparacion) {
+        if (confirm('¿Está seguro de que desea eliminar esta comparación?')) {
+            fetch(`/reporte_comparaciones/delete/${id_comparacion}`, { method: 'DELETE' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    cargarComparaciones();
+                })
+                .catch(error => console.error('Error al eliminar comparación:', error));
+        }
+    }
+
+    // Cargar comparaciones al cargar la página
+    window.onload = cargarComparaciones;
+</script>
+
+</body>
+</html>
