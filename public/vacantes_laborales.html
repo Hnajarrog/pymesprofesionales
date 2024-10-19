@@ -78,10 +78,28 @@
             margin-top: 20px;
             text-align: center;
             color: #333;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
         }
 
         .back-link:hover {
-            color: #000;
+            background-color: #45a049;
+        }
+
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            background-color: #2196F3;
+        }
+
+        /* Ocultar botones, formulario de creación y la columna de acciones al imprimir */
+        @media print {
+            .delete-btn, .update-btn, .print-btn, .back-link, .acciones, form {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -96,6 +114,8 @@
         <button type="submit">Agregar Vacante</button>
     </form>
 
+    <button class="print-btn" onclick="window.print()">Imprimir en PDF</button>
+
     <h2>Lista de Vacantes</h2>
     <table>
         <thead>
@@ -103,7 +123,7 @@
                 <th>Título</th>
                 <th>Descripción</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th class="acciones">Acciones</th>
             </tr>
         </thead>
         <tbody id="vacante-list">
@@ -129,7 +149,7 @@
                             <td>${vacante.titulo_vacante}</td>
                             <td>${vacante.descripcion_vacante}</td>
                             <td>${vacante.estado_vacante}</td>
-                            <td>
+                            <td class="acciones">
                                 <form action="/vacantes_laborales/update/${vacante.id_vacante}" method="POST">
                                     <select name="estado_vacante">
                                         <option value="Disponible" ${vacante.estado_vacante === 'Disponible' ? 'selected' : ''}>Disponible</option>
