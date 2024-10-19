@@ -20,6 +20,7 @@
         input[type="text"], input[type="email"], input[type="password"], select {
             padding: 10px;
             width: 70%;
+            margin-bottom: 10px;
         }
 
         button {
@@ -68,15 +69,34 @@
             background-color: #d32f2f;
         }
 
-        .back-link {
-            display: block;
+        .back-link, .print-btn {
+            display: inline-block;
             margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
             text-align: center;
-            color: #333;
         }
 
         .back-link:hover {
-            color: #000;
+            background-color: #0056b3;
+        }
+
+        .print-btn {
+            background-color: #4CAF50;
+        }
+
+        .print-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Ocultar formularios y botones al imprimir */
+        @media print {
+            form, .delete-btn, .back-link, .print-btn {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -93,13 +113,11 @@
         <!-- Lista desplegable para seleccionar el rol -->
         <select name="IDRol" id="rol-select" required>
             <option value="" disabled selected>Seleccione un Rol</option>
-            <!-- Las opciones se llenarán con JavaScript -->
         </select>
 
         <!-- Lista desplegable para seleccionar el área de Pyme -->
         <select name="IDArea" id="area-select" required>
             <option value="" disabled selected>Seleccione un Área de Pyme</option>
-            <!-- Las opciones se llenarán con JavaScript -->
         </select>
 
         <button type="submit">Crear Usuario</button>
@@ -117,10 +135,10 @@
             </tr>
         </thead>
         <tbody id="usuarios-list">
-            <!-- Los usuarios se llenarán con AJAX -->
         </tbody>
     </table>
 
+    <button class="print-btn" onclick="window.print()">Imprimir</button>
     <a href="/menu" class="back-link">Regresar al Menú</a>
 </div>
 
@@ -186,4 +204,3 @@
 
 </body>
 </html>
-
