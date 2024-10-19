@@ -63,17 +63,37 @@
         }
 
         .delete-btn {
-            background-color: #f44336;
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px; /* Hacer que el tamaño del botón sea más parecido al de "Regresar al Menú" */
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Redondear bordes */
+    font-size: 14px; /* Ajustar el tamaño de la fuente */
+    width: 100%; /* Hacer el botón del mismo ancho que el contenedor */
+    max-width: 150px; /* Limitar el ancho máximo */
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+ /* Estilo para el botón de regresar */
+ .back-link {
+            text-align: center;
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
-            padding: 5px 10px;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
-        .delete-btn:hover {
-            background-color: #d32f2f;
+        .back-link:hover {
+            background-color: #0056b3;
         }
 
         .print-btn {
@@ -88,7 +108,7 @@
 
         /* Ocultar botones al imprimir */
         @media print {
-            .delete-btn, .print-btn {
+            .delete-btn, .print-btn, .back-link {
                 display: none;
             }
         }
@@ -107,9 +127,9 @@
 <a href="/menu" class="back-link">Regresar al Menú</a>
 
 <script>
-    // Función para cargar los datos de perfiles profesionales
+    // Función para cargar los datos de perfiles
     function cargarPerfiles() {
-        fetch('/reporte_perfiles/api/perfiles_profesionales')
+        fetch('/reporte_perfiles/api/perfiles')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('perfiles-container');
@@ -120,8 +140,8 @@
                     div.className = 'perfil-container';
                     div.innerHTML = `
                         <div class="perfil-details">
-                            <h2>Perfil: ${perfil.titulo_vacante}</h2>
-                            <div class="detail-row"><span class="detail-label">Vacante:</span><span class="detail-value">${perfil.titulo_vacante}</span></div>
+                            <h2>Perfil: ${perfil.id_perfil}</h2>
+                            <div class="detail-row"><span class="detail-label">Nombre:</span><span class="detail-value">${perfil.titulo_vacante}</span></div>
                             <div class="detail-row"><span class="detail-label">Profesión:</span><span class="detail-value">${perfil.nombreprofesion}</span></div>
                             <div class="detail-row"><span class="detail-label">Nivel de Educación:</span><span class="detail-value">${perfil.nombre_educacion}</span></div>
                             <div class="detail-row"><span class="detail-label">Disponibilidad Horaria:</span><span class="detail-value">${perfil.nombre_disponibilidad}</span></div>
@@ -130,8 +150,8 @@
                             <div class="detail-row"><span class="detail-label">Licencia de Conducir:</span><span class="detail-value">${perfil.nombre_licencia}</span></div>
                             <div class="detail-row"><span class="detail-label">Ubicación:</span><span class="detail-value">${perfil.nombre_ubicacion}</span></div>
                             <div class="detail-row"><span class="detail-label">Rango de Edad:</span><span class="detail-value">${perfil.rango_edad}</span></div>
-                            <div class="detail-row"><span class="detail-label">Disponibilidad para Viajar:</span><span class="detail-value">${perfil.nombre_disponibilidad_viajar}</span></div>
-                            <button class="delete-btn" onclick="eliminarPerfil('${perfil.id_perfil}')">Eliminar</button>
+                            <div class="detail-row"><span class="detail-label">Disponibilidad para Viajar:</span><span class="detail-value">${perfil.disponibilidad_viajar}</span></div>
+                            <button class="delete-btn" onclick="eliminarPerfil(${perfil.id_perfil})">Eliminar</button>
                         </div>
                     `;
                     container.appendChild(div);
@@ -140,7 +160,7 @@
             .catch(error => console.error('Error al cargar perfiles:', error));
     }
 
-    // Función para eliminar un perfil profesional
+    // Función para eliminar un perfil
     function eliminarPerfil(id_perfil) {
         if (confirm('¿Está seguro de que desea eliminar este perfil?')) {
             fetch(`/reporte_perfiles/delete/${id_perfil}`, { method: 'DELETE' })
