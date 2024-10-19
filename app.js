@@ -17,6 +17,14 @@ const perfilesProfesionalesRoutes = require('./routes/perfiles_profesionales'); 
 const disponibilidadViajarRoutes = require('./routes/disponibilidad_viajar'); // Importa el modulo dispóniblidad de viajar.
 const reportePerfilesRoutes = require('./routes/reporte_perfiles');// importa repote perfiles.js para ser utilizado
 const reporteCandidatosRoutes = require('./routes/reporte_candidatos');// reportes candidatos
+const reporteComparacionesRouter = require('./routes/reporte_comparaciones');// importación de reporte de comparaciones
+
+
+
+const comparacion = require('./routes/comparacion_perfiles');// Ruta para el módulo de comparación de afinidad entre candidatos y perfiles
+
+
+
 const connection = require('./config');  //Conexión a la base de datos
 
 const app = express();
@@ -74,6 +82,8 @@ app.use('/disponibilidad_viajar', disponibilidadViajarRoutes); // usar modulo di
 app.use('/perfiles_profesionales', perfilesProfesionalesRoutes);// usa modulo de perfiles profesionales
 app.use('/reporte_perfiles', reportePerfilesRoutes); // utiliza modulo de reporte perfiles 
 app.use('/reporte_candidatos', reporteCandidatosRoutes); // utilizar reporte candidatos 
+app.use('/reporte_comparaciones', reporteComparacionesRouter);// uso de modulo de reporte de comparaciones
+app.use('/comparacion', comparacion);//usa modulo de comparación de perfil y candidato
 // Ruta para mostrar la página de gestión de profesiones
 app.get('/profesiones', (req, res) => {
     const query = 'SELECT * FROM profesiones';
