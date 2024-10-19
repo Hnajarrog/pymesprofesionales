@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparación de Afinidad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Comparación de Afinidad entre Candidato y Perfil</h1>
+
+<div class="form-group">
+    <label for="candidato">Seleccionar Candidato:</label>
+    <select id="candidato"></select>
+</div>
+
+<div class="form-group">
+    <label for="perfil">Seleccionar Perfil Profesional:</label>
+    <select id="perfil"></select>
+</div>
+
+<button id="compararBtn">Comparar Afinidad</button>
+<button id="guardarBtn" disabled>Guardar Comparación</button>
+
+<div class="result">
+    <p id="nombreCandidato">Candidato: </p>
+    <p id="nombrePerfil">Perfil: </p>
+    <p id="resultadoAfinidad">Porcentaje de afinidad: </p>
+    <p id="diferencias">Diferencias: </p>
+</div>
+
+<a href="/menu" class="back-link">Regresar al Menú</a>
+
+<script>
+    let idCandidato, idPerfil, afinidad;
+
+    // Cargar candidatos y perfiles en los select
+    function cargarCandidatosPerfiles() {
+        fetch('/comparacion/api/obtenerCandidatosPerfiles')
+            .then(response => response.json())
+            .then(data => {
+                const candidatoSelect = document.getElementById('candidato');
+                const perfilSelect = document.getElementById('perfil');
+                
+                // Poblar select de candidatos
+                data.candidatos.forEach(candidato => {
+                    const option = document.createElement('option');
+                    option.value = candidato.id_candidato;
+                    option.textContent = candidato.nombre_completo;
+                    candidatoSelect.appendChild(option);
+                });
+
+                // Poblar select de perfiles
+                data.perfiles.forEach(perfil => {
+                    const option = document.createElement('option');
+                    option.value = perfil.id_perfil;
+                    option.textContent = perfil.nombreprofesion;
+                    perfilSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al cargar candidatos y perfiles:', error));
+    }
+
+    // Comparar afinidad
+    document.getElementById('compararBtn').addEventListener('click', function() {
+        idCandidato = document.getElementById('candidato').value;
+        idPerfil = document.getElementById('perfil').value;
+
+        fetch(`/comparacion/api/comparar/${idCandidato}/${idPerfil}`)
+            .then(response => response.json())
+            .then(data => {
+                afinidad = parseFloat(data.afinidad);
+                document.getElementById('nombreCandidato').textContent = `Candidato: ${data.candidatoNombre}`;
+                document.getElementById('nombrePerfil').textContent = `Perfil: ${data.perfilNombre}`;
+                document.getElementById('resultadoAfinidad').textContent = `Porcentaje de afinidad: ${data.afinidad}`;
+                document.getElementById('diferencias').textContent = `Diferencias: ${data.diferencias.join(', ')}`;
+
+                // Habilitar botón de guardar
+                document.getElementById('guardarBtn').disabled = false;
+            })
+            .catch(error => console.error('Error al comparar afinidad:', error));
+    });
+
+    // Guardar comparación
+    document.getElementById('guardarBtn').addEventListener('click', function() {
+        fetch('/comparacion/api/guardarComparacion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_candidato: idCandidato,
+                id_perfil: idPerfil,
+                afinidad: afinidad
+            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);  // Mostrar mensaje de éxito
+        })
+        .catch(error => console.error('Error al guardar comparación:', error));
+    });
+
+    // Cargar candidatos y perfiles al iniciar la página
+    window.onload = cargarCandidatosPerfiles;
+</script>
+
+</body>
+</html>
