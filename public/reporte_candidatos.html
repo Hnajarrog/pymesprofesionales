@@ -61,20 +61,39 @@
         button:hover {
             background-color: #45a049;
         }
-
         .delete-btn {
-            background-color: #f44336;
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px; /* Hacer que el tamaño del botón sea más parecido al de "Regresar al Menú" */
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Redondear bordes */
+    font-size: 14px; /* Ajustar el tamaño de la fuente */
+    width: 100%; /* Hacer el botón del mismo ancho que el contenedor */
+    max-width: 150px; /* Limitar el ancho máximo */
+}
+ /* Estilo para el botón de regresar */
+ .back-link {
+            text-align: center;
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
-            padding: 5px 10px;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
-        .delete-btn:hover {
-            background-color: #d32f2f;
+        .back-link:hover {
+            background-color: #0056b3;
         }
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
 
         .print-btn {
             margin-bottom: 20px;
