@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Estado del Candidato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .estado-candidato {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .estado-candidato h3 {
+            color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 20px 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            background-color: #2196F3;
+        }
+
+        .back-btn:hover {
+            background-color: #1e88e5;
+        }
+
+        @media print {
+            button {
+                display: none; /* Ocultar botones al imprimir */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Reporte de Estado del Candidato</h1>
+
+        <div id="reporte-estado-list">
+            <!-- Aquí se llenarán los estados de candidatos con JavaScript -->
+        </div>
+
+        <button onclick="window.print()">Imprimir</button>
+        <button class="back-btn" onclick="window.location.href='/menu'">Regresar al Menú</button>
+    </div>
+
+    <script>
+        // Función para cargar los datos del reporte de estado de candidatos
+        function cargarReporteEstado() {
+            fetch('/reporte_estado/api/estados_candidatos')
+                .then(response => response.json())
+                .then(data => {
+                    const reporteEstadoList = document.getElementById('reporte-estado-list');
+                    reporteEstadoList.innerHTML = ''; // Limpiar la lista
+
+                    data.forEach(estado => {
+                        const estadoDiv = document.createElement('div');
+                        estadoDiv.classList.add('estado-candidato');
+
+                        estadoDiv.innerHTML = `
+                            <h3>Candidato: ${estado.candidato}</h3>
+                            <p><strong>Perfil:</strong> ${estado.perfil}</p>
+                            <p><strong>Estado:</strong> ${estado.estado}</p>
+                            <p><strong>Comentario:</strong> ${estado.comentario_rechazo || 'N/A'}</p>
+                            <p><strong>Fecha de Actualización:</strong> ${new Date(estado.fecha_actualizacion).toLocaleString()}</p>
+                        `;
+                        reporteEstadoList.appendChild(estadoDiv);
+                    });
+                })
+                .catch(error => console.error('Error al cargar los estados:', error));
+        }
+
+        // Llamar a la función cuando la página se haya cargado
+        window.onload = cargarReporteEstado;
+    </script>
+
+</body>
+</html>
