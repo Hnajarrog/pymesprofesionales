@@ -3,7 +3,7 @@ const router = express.Router();
 const connection = require('../config');
 const path = require('path');
 
-// Ruta para mostrar la vista de comparación
+// Ruta para mostrar la vista de comparación de perfiles
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'comparacion_perfiles.html'));
 });
@@ -16,21 +16,18 @@ router.get('/api/obtenerCandidatosPerfiles', (req, res) => {
         FROM perfiles_profesionales pp
         INNER JOIN vacantes_laborales v ON pp.id_vacante = v.id_vacante`;
 
-    // Ejecutar la consulta de candidatos primero
     connection.query(queryCandidatos, (err, candidatos) => {
         if (err) {
             console.error('Error al obtener candidatos:', err);
             return res.status(500).send('Error al obtener los datos de candidatos.');
         }
 
-        // Luego ejecutar la consulta de perfiles
         connection.query(queryPerfiles, (err, perfiles) => {
             if (err) {
                 console.error('Error al obtener perfiles:', err);
                 return res.status(500).send('Error al obtener los datos de perfiles.');
             }
 
-            // Enviar ambos resultados como respuesta
             res.json({
                 candidatos: candidatos,
                 perfiles: perfiles
@@ -39,7 +36,7 @@ router.get('/api/obtenerCandidatosPerfiles', (req, res) => {
     });
 });
 
-// Ruta para realizar la comparación
+// Ruta para realizar la comparación de afinidad
 router.get('/api/comparar/:id_candidato/:id_perfil', (req, res) => {
     const { id_candidato, id_perfil } = req.params;
 
@@ -53,7 +50,7 @@ router.get('/api/comparar/:id_candidato/:id_perfil', (req, res) => {
         INNER JOIN experiencia_laboral el ON c.id_experiencia = el.id_experiencia
         INNER JOIN licencia_conducir lc ON c.id_licencia = lc.id_licencia
         INNER JOIN ubicaciones u ON c.id_ubicacion = u.id_ubicacion
-        WHERE c.id_candidato = ?`;
+        WHERE id_candidato = ?`;
 
     const queryPerfil = `
         SELECT pp.*, v.titulo_vacante, p.nombreprofesion, ne.nombre_educacion, d.nombre_disponibilidad, ps.valor_pretension, el.explicacion_experiencia, lc.nombre_licencia, u.nombre_ubicacion
@@ -66,86 +63,104 @@ router.get('/api/comparar/:id_candidato/:id_perfil', (req, res) => {
         INNER JOIN experiencia_laboral el ON pp.id_experiencia = el.id_experiencia
         INNER JOIN licencia_conducir lc ON pp.id_licencia = lc.id_licencia
         INNER JOIN ubicaciones u ON pp.id_ubicacion = u.id_ubicacion
-        WHERE pp.id_perfil = ?`;
+        WHERE id_perfil = ?`;
 
-    // Obtener los datos del candidato
     connection.query(queryCandidato, [id_candidato], (err, candidatoResults) => {
         if (err) {
             console.error('Error al obtener datos del candidato:', err);
             return res.status(500).send('Error al obtener los datos del candidato.');
         }
 
-        const candidato = candidatoResults[0];  // Primer resultado: datos del candidato
+        const candidato = candidatoResults[0];  
 
-        // Obtener los datos del perfil profesional
         connection.query(queryPerfil, [id_perfil], (err, perfilResults) => {
             if (err) {
                 console.error('Error al obtener datos del perfil:', err);
                 return res.status(500).send('Error al obtener los datos del perfil.');
             }
 
-            const perfil = perfilResults[0];  // Segundo resultado: datos del perfil profesional
+            const perfil = perfilResults[0];  
 
-            // Calcular afinidad
-            const { afinidad, diferencias } = calcularAfinidad(candidato, perfil);
+            const { afinidad, discrepancias } = calcularAfinidad(candidato, perfil);
 
-            // Retornar el resultado con el porcentaje de afinidad y las diferencias
             res.json({
                 afinidad: afinidad.toFixed(2) + '%',
-                diferencias,
                 candidatoNombre: `${candidato.nombres} ${candidato.apellidos}`,
-                perfilNombre: perfil.titulo_vacante
+                perfilNombre: perfil.titulo_vacante,
+                discrepancias: discrepancias.join('; ')
             });
         });
     });
 });
 
-// Función para calcular afinidad y diferencias
+// Función para calcular afinidad
 function calcularAfinidad(candidato, perfil) {
-    let totalCriterios = 7;  // Total de criterios a comparar
+    let totalCriterios = 7;  
     let coincidencias = 0;
-    let diferencias = [];
+    let discrepancias = [];
 
-    if (candidato.id_profesion === perfil.id_profesion) coincidencias++;
-    else diferencias.push('Profesión');
-    
-    if (candidato.id_nivel_educacion === perfil.id_nivel_educacion) coincidencias++;
-    else diferencias.push('Nivel de Educación');
-    
-    if (candidato.id_experiencia === perfil.id_experiencia) coincidencias++;
-    else diferencias.push('Experiencia Laboral');
-    
-    if (candidato.id_disponibilidad === perfil.id_disponibilidad) coincidencias++;
-    else diferencias.push('Disponibilidad');
-    
-    if (candidato.id_pretension === perfil.id_pretension) coincidencias++;
-    else diferencias.push('Pretensión Salarial');
-    
-    if (candidato.id_licencia === perfil.id_licencia) coincidencias++;
-    else diferencias.push('Licencia de Conducir');
-    
-    if (candidato.id_disponibilidad_viajar === perfil.id_disponibilidad_viajar) coincidencias++;
-    else diferencias.push('Disponibilidad para Viajar');
+    if (candidato.id_profesion === perfil.id_profesion) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Profesión: ${candidato.nombreprofesion} no coincide con ${perfil.nombreprofesion}`);
+    }
 
-    const afinidad = (coincidencias / totalCriterios) * 100;
-    return { afinidad, diferencias };
+    if (candidato.id_nivel_educacion === perfil.id_nivel_educacion) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Nivel de Educación: ${candidato.nombre_educacion} no coincide con ${perfil.nombre_educacion}`);
+    }
+
+    if (candidato.id_experiencia === perfil.id_experiencia) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Experiencia: ${candidato.explicacion_experiencia} no coincide con ${perfil.explicacion_experiencia}`);
+    }
+
+    if (candidato.id_disponibilidad === perfil.id_disponibilidad) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Disponibilidad: ${candidato.nombre_disponibilidad} no coincide con ${perfil.nombre_disponibilidad}`);
+    }
+
+    if (candidato.id_pretension === perfil.id_pretension) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Pretensión Salarial: ${candidato.valor_pretension} no coincide con ${perfil.valor_pretension}`);
+    }
+
+    if (candidato.id_licencia === perfil.id_licencia) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Licencia de Conducir: ${candidato.nombre_licencia} no coincide con ${perfil.nombre_licencia}`);
+    }
+
+    if (candidato.id_disponibilidad_viajar === perfil.id_disponibilidad_viajar) {
+        coincidencias++;
+    } else {
+        discrepancias.push(`Disponibilidad para Viajar: ${candidato.id_disponibilidad_viajar} no coincide con ${perfil.id_disponibilidad_viajar}`);
+    }
+
+    let afinidad = (coincidencias / totalCriterios) * 100;
+
+    return { afinidad, discrepancias };
 }
 
-// Ruta para guardar la comparación
-router.post('/api/guardarComparacion', (req, res) => {
-    const { id_candidato, id_perfil, afinidad } = req.body;
+// Ruta para guardar una comparación
+router.post('/api/guardar', (req, res) => {
+    const { id_candidato, id_perfil, afinidad, discrepancias } = req.body;
 
-    const queryInsert = `
-        INSERT INTO comparaciones (id_candidato, id_perfil, afinidad) 
-        VALUES (?, ?, ?)`;
+    const query = `
+        INSERT INTO comparaciones (id_candidato, id_perfil, afinidad, discrepancias)
+        VALUES (?, ?, ?, ?)
+    `;
 
-    connection.query(queryInsert, [id_candidato, id_perfil, afinidad], (err, result) => {
+    connection.query(query, [id_candidato, id_perfil, afinidad, discrepancias], (err, results) => {
         if (err) {
             console.error('Error al guardar la comparación:', err);
             return res.status(500).send('Error al guardar la comparación.');
         }
-        res.send('Comparación guardada correctamente.');
+        res.send('Comparación guardada correctamente');
     });
 });
-
 module.exports = router;

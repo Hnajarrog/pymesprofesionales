@@ -17,90 +17,57 @@
             color: #333;
         }
 
-        .comparacion-container {
-            margin: 20px 0;
-            padding: 20px;
+        .comparacion {
+            background-color: white;
             border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
             border-radius: 10px;
-            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .comparacion-container h2 {
-            text-align: left;
-            color: #4CAF50;
+        .comparacion p {
+            margin: 5px 0;
         }
 
-        .comparacion-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-row {
-            margin-bottom: 10px;
-        }
-
-        .detail-label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .detail-value {
-            color: #555;
-        }
-
-        .print-btn {
+        button {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
-            margin-bottom: 20px;
-            display: block;
+            margin: 10px 0;
         }
 
-        .print-btn:hover {
+        button:hover {
             background-color: #45a049;
         }
 
-        .delete-btn {
-    background-color: #f44336;
-    color: white;
-    padding: 10px 20px; /* Hacer que el tamaño del botón sea más parecido al de "Regresar al Menú" */
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px; /* Redondear bordes */
-    font-size: 14px; /* Ajustar el tamaño de la fuente */
-    width: 100%; /* Hacer el botón del mismo ancho que el contenedor */
-    max-width: 150px; /* Limitar el ancho máximo */
-}
+        .eliminar-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-.delete-btn:hover {
-    background-color: #d32f2f;
-}
+        .eliminar-btn:hover {
+            background-color: #d32f2f;
+        }
 
-
-
-        /* Estilo para el botón de regresar */
         .back-link {
             text-align: center;
             margin-top: 20px;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+        }
+
+        .back-link a {
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+            color: #4CAF50;
         }
 
-        .back-link:hover {
-            background-color: #0056b3;
-        }
-
-        /* Ocultar botones al imprimir */
         @media print {
-            .delete-btn, .print-btn, .back-link {
+            button, .eliminar-btn, .back-link {
                 display: none;
             }
         }
@@ -110,51 +77,52 @@
 
 <h1>Reporte de Comparaciones</h1>
 
-<button class="print-btn" onclick="window.print()">Imprimir</button>
+<div id="comparaciones-list"></div>
 
-<div id="comparaciones-container">
-    <!-- Los datos se llenarán con AJAX -->
+<div class="back-link">
+    <a href="/menu">Regresar al Menú</a>
+    <button onclick="window.print()">Imprimir</button>
 </div>
 
-<a href="/menu" class="back-link">Regresar al Menú</a>
-
 <script>
-    // Función para cargar los datos de comparaciones
+    // Función para cargar comparaciones desde el servidor
     function cargarComparaciones() {
         fetch('/reporte_comparaciones/api/comparaciones')
             .then(response => response.json())
             .then(data => {
-                const container = document.getElementById('comparaciones-container');
-                container.innerHTML = '';  // Limpiar contenido previo
+                const comparacionesList = document.getElementById('comparaciones-list');
+                comparacionesList.innerHTML = '';
 
                 data.forEach(comparacion => {
-                    const div = document.createElement('div');
-                    div.className = 'comparacion-container';
-                    div.innerHTML = `
-                        <div class="comparacion-details">
-                            <h2>Candidato: ${comparacion.candidato_nombre} ${comparacion.candidato_apellido}</h2>
-                            <div class="detail-row"><span class="detail-label">Perfil:</span><span class="detail-value">${comparacion.perfil_nombre}</span></div>
-                            <div class="detail-row"><span class="detail-label">Afinidad:</span><span class="detail-value">${comparacion.afinidad}%</span></div>
-                            <div class="detail-row"><span class="detail-label">Fecha de Comparación:</span><span class="detail-value">${comparacion.fecha_comparacion}</span></div>
-                            <button class="delete-btn" onclick="eliminarComparacion('${comparacion.id_comparacion}')">Eliminar</button>
-                        </div>
+                    const comparacionDiv = document.createElement('div');
+                    comparacionDiv.classList.add('comparacion');
+
+                    comparacionDiv.innerHTML = `
+                        <p><strong>Candidato:</strong> ${comparacion.candidato_nombre}</p>
+                        <p><strong>Perfil:</strong> ${comparacion.perfil_nombre}</p>
+                        <p><strong>Afinidad:</strong> ${comparacion.afinidad}%</p>
+                        <p><strong>Discrepancias:</strong> ${comparacion.discrepancias ? comparacion.discrepancias : 'Ninguna'}</p>
+                        <p><strong>Fecha de Comparación:</strong> ${new Date(comparacion.fecha_comparacion).toLocaleString()}</p>
+                        <button class="eliminar-btn" onclick="eliminarComparacion(${comparacion.id_comparacion})">Eliminar</button>
                     `;
-                    container.appendChild(div);
+
+                    comparacionesList.appendChild(comparacionDiv);
                 });
             })
-            .catch(error => console.error('Error al cargar comparaciones:', error));
+            .catch(error => console.error('Error al cargar las comparaciones:', error));
     }
 
     // Función para eliminar una comparación
     function eliminarComparacion(id_comparacion) {
-        if (confirm('¿Está seguro de que desea eliminar esta comparación?')) {
-            fetch(`/reporte_comparaciones/delete/${id_comparacion}`, { method: 'DELETE' })
-                .then(response => response.text())
-                .then(data => {
-                    alert(data);
-                    cargarComparaciones();
-                })
-                .catch(error => console.error('Error al eliminar comparación:', error));
+        if (confirm('¿Estás seguro de que deseas eliminar esta comparación?')) {
+            fetch(`/reporte_comparaciones/delete/${id_comparacion}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                alert('Comparación eliminada exitosamente.');
+                cargarComparaciones(); // Recargar la lista después de eliminar
+            })
+            .catch(error => console.error('Error al eliminar comparación:', error));
         }
     }
 

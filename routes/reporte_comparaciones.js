@@ -11,13 +11,14 @@ router.get('/', (req, res) => {
 // Ruta para obtener los datos de comparaciones
 router.get('/api/comparaciones', (req, res) => {
     const query = `
-        SELECT c.nombres AS candidato_nombre, 
-               c.apellidos AS candidato_apellido, 
-               v.titulo_vacante AS perfil_nombre, 
-               comp.afinidad, 
+        SELECT comp.id_comparacion,
+               CONCAT(ca.nombres, ' ', ca.apellidos) AS candidato_nombre,
+               v.titulo_vacante AS perfil_nombre,
+               comp.afinidad,
+               comp.discrepancias,
                comp.fecha_comparacion
         FROM comparaciones comp
-        INNER JOIN candidatos c ON comp.id_candidato = c.id_candidato
+        INNER JOIN candidatos ca ON comp.id_candidato = ca.id_candidato
         INNER JOIN perfiles_profesionales pp ON comp.id_perfil = pp.id_perfil
         INNER JOIN vacantes_laborales v ON pp.id_vacante = v.id_vacante
         ORDER BY comp.fecha_comparacion DESC

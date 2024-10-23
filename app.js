@@ -18,6 +18,11 @@ const disponibilidadViajarRoutes = require('./routes/disponibilidad_viajar'); //
 const reportePerfilesRoutes = require('./routes/reporte_perfiles');// importa repote perfiles.js para ser utilizado
 const reporteCandidatosRoutes = require('./routes/reporte_candidatos');// reportes candidatos
 const reporteComparacionesRouter = require('./routes/reporte_comparaciones');// importación de reporte de comparaciones
+const reporteEstadoRouter = require('./routes/reporte_estado');
+
+
+const estadoCandidato = require('./routes/estado_candidato');
+
 
 
 
@@ -49,7 +54,7 @@ app.use(session({
     secret: 'secreto',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 15 * 60 * 1000 } // 15 minutos de sesión
+    cookie: { maxAge: 45 * 60 * 1000 } // 15 minutos de sesión
 }));
 
 // Middleware para manejar datos de formularios
@@ -83,7 +88,9 @@ app.use('/perfiles_profesionales', perfilesProfesionalesRoutes);// usa modulo de
 app.use('/reporte_perfiles', reportePerfilesRoutes); // utiliza modulo de reporte perfiles 
 app.use('/reporte_candidatos', reporteCandidatosRoutes); // utilizar reporte candidatos 
 app.use('/reporte_comparaciones', reporteComparacionesRouter);// uso de modulo de reporte de comparaciones
+app.use('/estado_candidato', estadoCandidato);
 app.use('/comparacion', comparacion);//usa modulo de comparación de perfil y candidato
+app.use('/reporte_estado', reporteEstadoRouter);
 // Ruta para mostrar la página de gestión de profesiones
 app.get('/profesiones', (req, res) => {
     const query = 'SELECT * FROM profesiones';
