@@ -30,4 +30,18 @@ router.get('/api/estados_candidatos', (req, res) => {
     });
 });
 
+// Ruta para eliminar un estado de candidato
+router.delete('/delete/:id_estado', (req, res) => {
+    const { id_estado } = req.params;
+    const query = 'DELETE FROM estados_candidatos WHERE id_estado = ?';
+
+    connection.query(query, [id_estado], (err, result) => {
+        if (err) {
+            console.error('Error al eliminar el estado de candidato:', err);
+            return res.status(500).send('Error al eliminar el estado de candidato.');
+        }
+        res.send('Estado de candidato eliminado exitosamente.');
+    });
+});
+
 module.exports = router;

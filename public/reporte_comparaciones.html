@@ -10,11 +10,14 @@
             background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
+            max-width: 700px; /* Más angosto */
+            margin: auto; /* Centramos la vista */
         }
 
         h1 {
             text-align: center;
             color: #333;
+            font-size: 28px; /* Mejor resalte */
         }
 
         .comparacion {
@@ -28,6 +31,11 @@
 
         .comparacion p {
             margin: 5px 0;
+            font-size: 16px; /* Mejor resalte */
+        }
+
+        .comparacion strong {
+            color: #4CAF50;
         }
 
         button {
@@ -37,6 +45,7 @@
             border: none;
             cursor: pointer;
             margin: 10px 0;
+            font-size: 16px; /* Mejor resalte */
         }
 
         button:hover {
@@ -47,9 +56,11 @@
             background-color: #f44336;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px; /* Ajustar tamaño */
             border-radius: 5px;
             cursor: pointer;
+            font-size: 14px;
+            max-width: 150px;
         }
 
         .eliminar-btn:hover {
@@ -63,7 +74,17 @@
 
         .back-link a {
             text-decoration: none;
-            color: #4CAF50;
+            color: #007bff;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-size: 16px; /* Mejor resalte */
+        }
+
+        .back-link a:hover {
+            background-color: #0056b3;
         }
 
         @media print {

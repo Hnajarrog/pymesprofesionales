@@ -14,7 +14,7 @@
         }
 
         .container {
-            width: 80%;
+            width: 50%; /* Ajustar el ancho de la vista */
             margin: 50px auto;
             background-color: white;
             padding: 20px;
@@ -60,6 +60,19 @@
             background-color: #1e88e5;
         }
 
+        .eliminar-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .eliminar-btn:hover {
+            background-color: #d32f2f;
+        }
+
         @media print {
             button {
                 display: none; /* Ocultar botones al imprimir */
@@ -99,11 +112,25 @@
                             <p><strong>Estado:</strong> ${estado.estado}</p>
                             <p><strong>Comentario:</strong> ${estado.comentario_rechazo || 'N/A'}</p>
                             <p><strong>Fecha de Actualización:</strong> ${new Date(estado.fecha_actualizacion).toLocaleString()}</p>
+                            <button class="eliminar-btn" onclick="eliminarEstado(${estado.id_estado})">Eliminar</button>
                         `;
                         reporteEstadoList.appendChild(estadoDiv);
                     });
                 })
                 .catch(error => console.error('Error al cargar los estados:', error));
+        }
+
+        // Función para eliminar un estado de candidato
+        function eliminarEstado(id_estado) {
+            if (confirm('¿Está seguro de que desea eliminar este estado de candidato?')) {
+                fetch(`/reporte_estado/delete/${id_estado}`, { method: 'DELETE' })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert(data);
+                        cargarReporteEstado(); // Recargar la lista después de eliminar
+                    })
+                    .catch(error => console.error('Error al eliminar el estado de candidato:', error));
+            }
         }
 
         // Llamar a la función cuando la página se haya cargado

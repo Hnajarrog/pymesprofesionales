@@ -10,11 +10,14 @@
             background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
+            max-width: 700px; /* Más angosto */
+            margin: auto; /* Centramos la vista */
         }
 
         h1 {
             text-align: center;
             color: #333;
+            font-size: 28px; /* Letras mejor resaltadas */
         }
 
         .candidato-container {
@@ -28,6 +31,7 @@
         .candidato-container h2 {
             text-align: left;
             color: #4CAF50;
+            font-size: 24px; /* Mejor resalte */
         }
 
         .candidato-details {
@@ -42,10 +46,12 @@
         .detail-label {
             font-weight: bold;
             margin-right: 10px;
+            font-size: 16px; /* Mejor resalte */
         }
 
         .detail-value {
             color: #555;
+            font-size: 14px;
         }
 
         button {
@@ -56,25 +62,31 @@
             cursor: pointer;
             margin-bottom: 20px;
             display: block;
+            font-size: 16px; /* Mejor resalte */
         }
 
         button:hover {
             background-color: #45a049;
         }
+
         .delete-btn {
-    background-color: #f44336;
-    color: white;
-    padding: 10px 20px; /* Hacer que el tamaño del botón sea más parecido al de "Regresar al Menú" */
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px; /* Redondear bordes */
-    font-size: 14px; /* Ajustar el tamaño de la fuente */
-    width: 100%; /* Hacer el botón del mismo ancho que el contenedor */
-    max-width: 150px; /* Limitar el ancho máximo */
-}
- /* Estilo para el botón de regresar */
- .back-link {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+            max-width: 150px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
             text-align: center;
             margin-top: 20px;
             display: inline-block;
@@ -84,30 +96,20 @@
             text-decoration: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            font-size: 16px;
         }
 
         .back-link:hover {
             background-color: #0056b3;
         }
 
-.delete-btn:hover {
-    background-color: #d32f2f;
-}
-
-
         .print-btn {
             margin-bottom: 20px;
+            font-size: 16px;
         }
 
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-            display: block;
-        }
-
-        /* Ocultar botones al imprimir */
         @media print {
-            .delete-btn, .print-btn {
+            .delete-btn, .print-btn, .back-link {
                 display: none;
             }
         }
