@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Estado del Candidato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .btn-save {
+            background-color: #4CAF50;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Estado del Candidato</h1>
+
+    <label for="candidatoSelect">Seleccionar Candidato:</label>
+    <select id="candidatoSelect"></select>
+
+    <label for="candidato">Candidato:</label>
+    <input type="text" id="candidato" readonly>
+
+    <label for="perfil">Perfil:</label>
+    <input type="text" id="perfil" readonly>
+
+    <label for="discrepancias">Discrepancias:</label>
+    <textarea id="discrepancias" rows="4" readonly></textarea>
+
+    <label for="estado">Estado:</label>
+    <select id="estado">
+        <option value="Pendiente">Pendiente</option>
+        <option value="En Proceso">En Proceso</option>
+        <option value="Rechazado">Rechazado</option>
+    </select>
+
+    <label for="comentarioRechazo">Comentario sobre candidato:</label>
+    <textarea id="comentarioRechazo" rows="4"></textarea>
+
+    <button class="btn-save" id="guardarBtn">Guardar</button>
+    <button class="btn-delete" id="eliminarBtn">Eliminar</button>
+
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Cargar los candidatos y perfiles
+    function cargarCandidatos() {
+        fetch('/estado_candidato/api/obtenerCandidatos')
+            .then(response => response.json())
+            .then(data => {
+                const candidatoSelect = document.getElementById('candidatoSelect');
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id_comparacion;
+                    option.textContent = item.candidato;
+                    candidatoSelect.appendChild(option);
+                });
+
+                // Mostrar los datos del candidato seleccionado
+                candidatoSelect.addEventListener('change', () => {
+                    const selected = data.find(item => item.id_comparacion == candidatoSelect.value);
+                    document.getElementById('candidato').value = selected.candidato;
+                    document.getElementById('perfil').value = selected.perfil;
+                    document.getElementById('discrepancias').value = selected.discrepancias || 'Sin discrepancias';
+                    document.getElementById('estado').value = selected.estado;
+                    document.getElementById('comentarioRechazo').value = selected.comentario_rechazo || '';
+                });
+            })
+            .catch(error => console.error('Error al cargar candidatos:', error));
+    }
+
+    // Guardar el estado del candidato
+    document.getElementById('guardarBtn').addEventListener('click', function() {
+        const id_comparacion = document.getElementById('candidatoSelect').value;
+        const estado = document.getElementById('estado').value;
+        const comentario_rechazo = document.getElementById('comentarioRechazo').value;
+
+        fetch('/estado_candidato/api/guardarEstado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_comparacion, estado, comentario_rechazo })
+        })
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => console.error('Error al guardar estado:', error));
+    });
+
+    // Eliminar el estado del candidato
+    document.getElementById('eliminarBtn').addEventListener('click', function() {
+        const id_comparacion = document.getElementById('candidatoSelect').value;
+
+        fetch(`/estado_candidato/api/eliminarEstado/${id_comparacion}`, { method: 'DELETE' })
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => console.error('Error al eliminar estado:', error));
+    });
+
+    // Cargar los candidatos al cargar la página
+    window.onload = cargarCandidatos;
+</script>
+
+</body>
+</html>

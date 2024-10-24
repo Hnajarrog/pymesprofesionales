@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Comparaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            max-width: 700px; /* Más angosto */
+            margin: auto; /* Centramos la vista */
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 28px; /* Mejor resalte */
+        }
+
+        .comparacion {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparacion p {
+            margin: 5px 0;
+            font-size: 16px; /* Mejor resalte */
+        }
+
+        .comparacion strong {
+            color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 10px 0;
+            font-size: 16px; /* Mejor resalte */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .eliminar-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px; /* Ajustar tamaño */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            max-width: 150px;
+        }
+
+        .eliminar-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-size: 16px; /* Mejor resalte */
+        }
+
+        .back-link a:hover {
+            background-color: #0056b3;
+        }
+
+        @media print {
+            button, .eliminar-btn, .back-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Reporte de Comparaciones</h1>
+
+<div id="comparaciones-list"></div>
+
+<div class="back-link">
+    <a href="/menu">Regresar al Menú</a>
+    <button onclick="window.print()">Imprimir</button>
+</div>
+
+<script>
+    // Función para cargar comparaciones desde el servidor
+    function cargarComparaciones() {
+        fetch('/reporte_comparaciones/api/comparaciones')
+            .then(response => response.json())
+            .then(data => {
+                const comparacionesList = document.getElementById('comparaciones-list');
+                comparacionesList.innerHTML = '';
+
+                data.forEach(comparacion => {
+                    const comparacionDiv = document.createElement('div');
+                    comparacionDiv.classList.add('comparacion');
+
+                    comparacionDiv.innerHTML = `
+                        <p><strong>Candidato:</strong> ${comparacion.candidato_nombre}</p>
+                        <p><strong>Perfil:</strong> ${comparacion.perfil_nombre}</p>
+                        <p><strong>Afinidad:</strong> ${comparacion.afinidad}%</p>
+                        <p><strong>Discrepancias:</strong> ${comparacion.discrepancias ? comparacion.discrepancias : 'Ninguna'}</p>
+                        <p><strong>Fecha de Comparación:</strong> ${new Date(comparacion.fecha_comparacion).toLocaleString()}</p>
+                        <button class="eliminar-btn" onclick="eliminarComparacion(${comparacion.id_comparacion})">Eliminar</button>
+                    `;
+
+                    comparacionesList.appendChild(comparacionDiv);
+                });
+            })
+            .catch(error => console.error('Error al cargar las comparaciones:', error));
+    }
+
+    // Función para eliminar una comparación
+    function eliminarComparacion(id_comparacion) {
+        if (confirm('¿Estás seguro de que deseas eliminar esta comparación?')) {
+            fetch(`/reporte_comparaciones/delete/${id_comparacion}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                alert('Comparación eliminada exitosamente.');
+                cargarComparaciones(); // Recargar la lista después de eliminar
+            })
+            .catch(error => console.error('Error al eliminar comparación:', error));
+        }
+    }
+
+    // Cargar comparaciones al cargar la página
+    window.onload = cargarComparaciones;
+</script>
+
+</body>
+</html>

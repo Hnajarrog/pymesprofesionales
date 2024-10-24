@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pretensión Salarial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Pretensión Salarial</h1>
+
+    <form action="/pretension_salarial/add" method="POST">
+        <input type="text" name="valor_pretension" placeholder="Ingrese la Pretensión Salarial" required>
+        <button type="submit">Agregar Pretensión</button>
+    </form>
+
+    <h2>Lista de Pretensiones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Pretensión Salarial</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="pretension-list">
+            <!-- Las pretensiones se llenarán con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Función para cargar la lista de pretensiones salariales
+    function cargarPretensiones() {
+        fetch('/pretension_salarial/api')
+            .then(response => response.json())
+            .then(data => {
+                const pretensionList = document.getElementById('pretension-list');
+                pretensionList.innerHTML = '';
+
+                data.forEach(pretension => {
+                    pretensionList.innerHTML += `
+                        <tr>
+                            <td>${pretension.valor_pretension}</td>
+                            <td>
+                                <form action="/pretension_salarial/delete/${pretension.id_pretension}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pretensión salarial?');">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar las pretensiones salariales:', error));
+    }
+
+    // Cargar las pretensiones cuando la página se cargue
+    window.onload = cargarPretensiones;
+</script>
+
+</body>
+</html>

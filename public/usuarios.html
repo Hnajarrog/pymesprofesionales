@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], select {
+            padding: 10px;
+            width: 70%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link, .print-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        .print-btn {
+            background-color: #4CAF50;
+        }
+
+        .print-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Ocultar formularios y botones al imprimir */
+        @media print {
+            form, .delete-btn, .back-link, .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Usuarios</h1>
+
+    <form action="/usuarios/add" method="POST">
+        <input type="text" name="NombreUsuario" placeholder="Nombre de Usuario" required>
+        <input type="email" name="Correo" placeholder="Correo Electrónico" required>
+        <input type="password" name="Contraseña" placeholder="Contraseña" required>
+
+        <!-- Lista desplegable para seleccionar el rol -->
+        <select name="IDRol" id="rol-select" required>
+            <option value="" disabled selected>Seleccione un Rol</option>
+        </select>
+
+        <!-- Lista desplegable para seleccionar el área de Pyme -->
+        <select name="IDArea" id="area-select" required>
+            <option value="" disabled selected>Seleccione un Área de Pyme</option>
+        </select>
+
+        <button type="submit">Crear Usuario</button>
+    </form>
+
+    <h2>Lista de Usuarios</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de Usuario</th>
+                <th>Correo Electrónico</th>
+                <th>Rol</th>
+                <th>Área Pyme</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="usuarios-list">
+        </tbody>
+    </table>
+
+    <button class="print-btn" onclick="window.print()">Imprimir</button>
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Función para cargar la lista de usuarios
+    function cargarUsuarios() {
+        fetch('/api/usuarios')
+            .then(response => response.json())
+            .then(data => {
+                const usuariosList = document.getElementById('usuarios-list');
+                usuariosList.innerHTML = '';
+
+                data.forEach(usuario => {
+                    usuariosList.innerHTML += `
+                        <tr>
+                            <td>${usuario.NombreUsuario}</td>
+                            <td>${usuario.Correo}</td>
+                            <td>${usuario.nombre_rol}</td>
+                            <td>${usuario.nombrearea}</td>
+                            <td>
+                                <form action="/usuarios/delete/${usuario.IDUsuario}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar los usuarios:', error));
+    }
+
+    // Función para cargar roles y áreas en los select
+    function cargarRolesYAreas() {
+        fetch('/api/rolesareas')
+            .then(response => response.json())
+            .then(data => {
+                const rolSelect = document.getElementById('rol-select');
+                const areaSelect = document.getElementById('area-select');
+
+                data.roles.forEach(rol => {
+                    const option = document.createElement('option');
+                    option.value = rol.id_rol;
+                    option.textContent = rol.nombre_rol;
+                    rolSelect.appendChild(option);
+                });
+
+                data.areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id_area;
+                    option.textContent = area.nombrearea;
+                    areaSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al cargar roles y áreas:', error));
+    }
+
+    // Cargar roles, áreas y usuarios cuando la página se cargue
+    window.onload = function() {
+        cargarRolesYAreas();
+        cargarUsuarios();
+    };
+</script>
+
+</body>
+</html>

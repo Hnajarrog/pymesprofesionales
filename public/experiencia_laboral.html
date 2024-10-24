@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Experiencia Laboral</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 40px auto;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Experiencia Laboral</h1>
+
+    <form action="/experiencia_laboral/add" method="POST">
+        <input type="text" name="explicacion_experiencia" placeholder="Ingrese la Experiencia Laboral" required>
+        <button type="submit">Agregar Experiencia</button>
+    </form>
+
+    <h2>Lista de Experiencias Laborales</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Experiencia Laboral</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="experiencia-list">
+            <!-- Las experiencias laborales se llenarán con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Función para cargar la lista de experiencias laborales ordenadas alfabéticamente
+    function cargarExperiencias() {
+        fetch('/experiencia_laboral/api')
+            .then(response => response.json())
+            .then(data => {
+                const experienciaList = document.getElementById('experiencia-list');
+                experienciaList.innerHTML = '';
+
+                data.forEach(experiencia => {
+                    experienciaList.innerHTML += `
+                        <tr>
+                            <td>${experiencia.explicacion_experiencia}</td>
+                            <td>
+                                <form action="/experiencia_laboral/delete/${experiencia.id_experiencia}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta experiencia laboral?');">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar las experiencias laborales:', error));
+    }
+
+    // Cargar las experiencias cuando la página se cargue
+    window.onload = cargarExperiencias;
+</script>
+
+</body>
+</html>

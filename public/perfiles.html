@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Perfiles</title>
+    <style>
+        /* Estilos para el cuerpo */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Estilos para el contenedor */
+        .profiles-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        /* Estilos para los títulos */
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        /* Estilos para los campos de entrada */
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Estilos para el botón */
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="profiles-container">
+        <h1>Lista de Perfiles Profesionales</h1>
+        <!-- Aquí puedes incluir un formulario o tabla para listar perfiles -->
+        <h2>Agregar Nuevo Perfil</h2>
+        <form action="/perfiles/add" method="POST">
+            <input type="text" name="nombrePerfil" placeholder="Nombre del Perfil" required><br>
+            <input type="text" name="perfilEducativo" placeholder="Perfil Educativo"><br>
+            <input type="text" name="rangoEdad" placeholder="Rango de Edad"><br>
+            <input type="text" name="lugarResidencia" placeholder="Lugar de Residencia"><br>
+            <input type="number" name="experienciaRequerida" placeholder="Experiencia Requerida (años)" required><br>
+            <textarea name="habilidadesRequeridas" placeholder="Habilidades Requeridas"></textarea><br>
+            <input type="text" name="rangoSalarial" placeholder="Rango Salarial"><br>
+            <textarea name="descripcionPuesto" placeholder="Descripción del Puesto"></textarea><br>
+            <textarea name="cursosAdicionales" placeholder="Cursos Adicionales"></textarea><br>
+            <button type="submit">Agregar Perfil</button>
+        </form>
+    </div>
+</body>
+</html>

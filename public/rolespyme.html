@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Roles de Pymes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Roles de Pymes</h1>
+
+    <!-- Formulario para agregar un nuevo rol de Pyme -->
+    <form action="/rolespyme/add" method="POST">
+        <input type="text" name="nombre_rol" placeholder="Nombre del Rol" required>
+        <button type="submit">Agregar Rol</button>
+    </form>
+
+    <!-- Tabla para mostrar los roles almacenados -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Rol</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="roles-list">
+            <!-- Aquí se insertarán dinámicamente los roles con AJAX -->
+        </tbody>
+    </table>
+
+    <a href="/menu" class="back-link">Regresar al Menú</a>
+</div>
+
+<script>
+    // Función para cargar los roles
+    function cargarRoles() {
+        fetch('/api/rolespyme')
+            .then(response => response.json())
+            .then(data => {
+                const rolesList = document.getElementById('roles-list');
+                rolesList.innerHTML = '';
+
+                data.forEach(rol => {
+                    rolesList.innerHTML += `
+                        <tr>
+                            <td>${rol.nombre_rol}</td>
+                            <td>
+                                <form action="/rolespyme/delete/${rol.id_rol}" method="POST" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error al cargar los roles:', error));
+    }
+
+    // Cargar los roles cuando la página esté lista
+    window.onload = cargarRoles;
+</script>
+
+</body>
+</html>
