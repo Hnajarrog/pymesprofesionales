@@ -22,16 +22,8 @@ const reporteEstadoRouter = require('./routes/reporte_estado');
 
 
 const estadoCandidato = require('./routes/estado_candidato');
-
-
-
-
 const comparacion = require('./routes/comparacion_perfiles');// Ruta para el módulo de comparación de afinidad entre candidatos y perfiles
-
-
-
 const connection = require('./config');  //Conexión a la base de datos
-
 const app = express();
 const port = process.env.PORT || 8888;
 
@@ -195,17 +187,19 @@ app.get('/usuarios/create', (req, res) => {
         });
     });
 });
+
 // Ruta para mostrar la lista de usuarios
 app.get('/usuarios', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));  // Muestra la vista usuarios.html
 });
+
 // Ruta para obtener todos los usuarios en formato JSON
 app.get('/api/usuarios', (req, res) => {
     const query = `
         SELECT Usuarios.*, roles_pyme.nombre_rol, areapymes.nombrearea 
         FROM Usuarios
-        LEFT JOIN roles_pyme ON Usuarios.IDRol = roles_pyme.id_rol
-        LEFT JOIN areapymes ON Usuarios.IDArea = areapymes.id_area;
+        LEFT JOIN roles_pyme ON Usuarios.id_rol = roles_pyme.id_rol
+        LEFT JOIN areapymes ON Usuarios.id_area = areapymes.id_area;
     `;
     connection.query(query, (err, results) => {
         if (err) throw err;
@@ -231,14 +225,14 @@ app.get('/api/rolesareas', (req, res) => {
 
 // Ruta para agregar un nuevo usuario
 app.post('/usuarios/add', (req, res) => {
-    const { NombreUsuario, Correo, Contraseña, IDRol, IDArea } = req.body;
+    const { NombreUsuario, Correo, Contraseña, id_rol, id_area } = req.body;
 
-    if (!NombreUsuario || !Correo || !Contraseña || !IDRol || !IDArea) {
+    if (!NombreUsuario || !Correo || !Contraseña || !id_rol || !id_area) {
         return res.status(400).send('Todos los campos son obligatorios');
     }
 
-    const query = 'INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IDRol, IDArea) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [NombreUsuario, Correo, Contraseña, IDRol, IDArea], (err, result) => {
+    const query = 'INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, id_rol, id_area) VALUES (?, ?, ?, ?, ?)';
+    connection.query(query, [NombreUsuario, Correo, Contraseña, id_rol, id_area], (err, result) => {
         if (err) {
             console.error('Error al agregar el usuario:', err);
             return res.status(500).send('Error al agregar el usuario');

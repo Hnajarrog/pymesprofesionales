@@ -11,18 +11,15 @@
             padding: 0;
             background-color: #f4f4f9;
         }
-
         .container {
             width: 80%;
             margin: 50px auto;
         }
-
         input[type="text"], input[type="email"], input[type="password"], select {
             padding: 10px;
             width: 70%;
             margin-bottom: 10px;
         }
-
         button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -30,45 +27,36 @@
             border: none;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #45a049;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table, th, td {
             border: 1px solid #ddd;
         }
-
         th, td {
             padding: 10px;
             text-align: left;
         }
-
         th {
             background-color: #4CAF50;
             color: white;
         }
-
         .delete-btn {
             background-color: #f44336;
             color: white;
             padding: 5px 10px;
-            text-decoration: none;
             border: none;
             cursor: pointer;
             border-radius: 5px;
         }
-
         .delete-btn:hover {
             background-color: #d32f2f;
         }
-
         .back-link, .print-btn {
             display: inline-block;
             margin-top: 20px;
@@ -79,20 +67,15 @@
             border-radius: 5px;
             text-align: center;
         }
-
         .back-link:hover {
             background-color: #0056b3;
         }
-
         .print-btn {
             background-color: #4CAF50;
         }
-
         .print-btn:hover {
             background-color: #45a049;
         }
-
-        /* Ocultar formularios y botones al imprimir */
         @media print {
             form, .delete-btn, .back-link, .print-btn {
                 display: none;
@@ -111,12 +94,12 @@
         <input type="password" name="Contraseña" placeholder="Contraseña" required>
 
         <!-- Lista desplegable para seleccionar el rol -->
-        <select name="IDRol" id="rol-select" required>
+        <select name="id_rol" id="rol-select" required>
             <option value="" disabled selected>Seleccione un Rol</option>
         </select>
 
         <!-- Lista desplegable para seleccionar el área de Pyme -->
-        <select name="IDArea" id="area-select" required>
+        <select name="id_area" id="area-select" required>
             <option value="" disabled selected>Seleccione un Área de Pyme</option>
         </select>
 
@@ -143,14 +126,13 @@
 </div>
 
 <script>
-    // Función para cargar la lista de usuarios
+    // Cargar usuarios
     function cargarUsuarios() {
         fetch('/api/usuarios')
             .then(response => response.json())
             .then(data => {
                 const usuariosList = document.getElementById('usuarios-list');
                 usuariosList.innerHTML = '';
-
                 data.forEach(usuario => {
                     usuariosList.innerHTML += `
                         <tr>
@@ -170,7 +152,7 @@
             .catch(error => console.error('Error al cargar los usuarios:', error));
     }
 
-    // Función para cargar roles y áreas en los select
+    // Cargar roles y áreas
     function cargarRolesYAreas() {
         fetch('/api/rolesareas')
             .then(response => response.json())
@@ -178,6 +160,7 @@
                 const rolSelect = document.getElementById('rol-select');
                 const areaSelect = document.getElementById('area-select');
 
+                // Rellenar los roles
                 data.roles.forEach(rol => {
                     const option = document.createElement('option');
                     option.value = rol.id_rol;
@@ -185,6 +168,7 @@
                     rolSelect.appendChild(option);
                 });
 
+                // Rellenar las áreas
                 data.areas.forEach(area => {
                     const option = document.createElement('option');
                     option.value = area.id_area;
